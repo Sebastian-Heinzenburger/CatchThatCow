@@ -1,0 +1,62 @@
+# ---- Java / Maven ----
+# Maven build output (all modules)
+target/
+
+# Maven release/plugin backups
+pom.xml.versionsBackup
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+
+# Crash logs
+hs_err_pid*
+replay_pid*
+
+# ---- IDEs & Editors ----
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+.apt_generated/
+
+# VS Code
+.vscode/
+
+# NetBeans
+nbproject/private/
+build/
+dist/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# ---- OS / Misc ----
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# Logs & temp
+*.log
+*.ctxt
+*.swp
+*.swo
+*~
+
+# Env files (if used)
+.env
+.env.*
+.env.local
+
+# Keep Maven Wrapper if present (do NOT ignore these)
+!/mvnw
+!/mvnw.cmd
+!/.mvn/wrapper/
