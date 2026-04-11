@@ -2,13 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>de.dhbw.ase</groupId>
-    <artifactId>x-cleanproject</artifactId>
+    <artifactId>CatchThatCow</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>1-cleanproject-adapters</artifactId>
+  <artifactId>0-CatchThatCow-plugin</artifactId>
   <dependencies>
   	<dependency>
-  		<artifactId>2-cleanproject-application</artifactId>
+  		<artifactId>1-CatchThatCow-adapters</artifactId>
   		<groupId>de.dhbw.ase</groupId>
   		<version>0.0.1-SNAPSHOT</version>
   		<scope>compile</scope>

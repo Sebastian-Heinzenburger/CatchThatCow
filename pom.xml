@@ -3,13 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.dhbw.ase</groupId>
-	<artifactId>x-cleanproject</artifactId>
+	<artifactId>CatchThatCow</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<modules>
-		<module>3-cleanproject-domain</module>
-		<module>2-cleanproject-application</module>
-		<module>1-cleanproject-adapters</module>
-		<module>0-cleanproject-plugin-database</module>
+		<module>4-CatchThatCow-abstraction</module>
+		<module>3-CatchThatCow-domain</module>
+		<module>2-CatchThatCow-application</module>
+		<module>1-CatchThatCow-adapters</module>
+		<module>0-CatchThatCow-plugin</module>
+		<module>0-CatchThatCow-main</module>
 	</modules>
 </project>
