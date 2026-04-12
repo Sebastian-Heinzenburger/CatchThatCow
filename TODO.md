@@ -1,0 +1,11 @@
+- Code review
+- Code korrigieren
+- Im  Kampf sollen sich die Angriffe zwisdchen SPieler und Gegnertier abwechseln. Der Angreifer waehlt eine Kategorie. Greift das Gegnertier an, wird die gewaehlte Kategorie dem Spieler angeyeigt, bevor dieser sein Tier auswaehlt.
+- Tiere gehoeren jeweils in ein bestimmtes Biom
+- Mehr Tiere.
+- Biome sollen sich Flickenteppich-mäßig zufällig abwechseln.
+- Verliert ein Spieler den Kampf, soll er nur dann ein TIer verlieren, wenn er mehr als 3 Tiere im Inventar hat. Ansonsten verliert er nur den Kampf, aber kein Tier.
+- Persistenz des Spielstands in einer Textdatei.
+- Tiersound API: https://heinzenburger.de/sounds/<tiername>.mp3, die abgespielt werden, wenn der Kampf beginnt z.B."ein wildes Eisbär erscheint!"
+- Testing
+- Projekt.md neu bearbeiten
