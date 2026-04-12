@@ -16,7 +16,7 @@ public class TerminalGamePresenter implements GamePresenter {
         textPresenter.print("║                                       ║");
         textPresenter.print("║        CATCH THAT COW!                ║");
         textPresenter.print("║                                       ║");
-        textPresenter.print("║   Fange wilde Tiere in epischen      ║");
+        textPresenter.print("║   Fange wilde Tiere in epischen       ║");
         textPresenter.print("║   Stat-Battles!                       ║");
         textPresenter.print("║                                       ║");
         textPresenter.print("╚═══════════════════════════════════════╝");
