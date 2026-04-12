@@ -60,11 +60,11 @@ public class TerminalGamePresenter extends GamePresenter {
         // add blue color to the player position
         map[playerPosition.getX()][playerPosition.getY()] = "\u001B[34m" + map[playerPosition.getX()][playerPosition.getY()] + "\u001B[0m";
         for (int y = 0; y < map.length; y++) {
-            String row = "";
+            StringBuilder row = new StringBuilder();
             for (int x = 0; x < map[y].length; x++) {
-                row += map[x][y] + " ";
+                row.append(map[x][y]).append(" ");
             }
-            textPresenter.print(row);
+            textPresenter.print(row.toString());
         }
     }
 
