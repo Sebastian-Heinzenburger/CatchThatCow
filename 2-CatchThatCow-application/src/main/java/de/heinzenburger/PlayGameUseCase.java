@@ -1,6 +1,7 @@
 package de.heinzenburger;
 
 import de.heinzenburger.gameactions.GameAction;
+import de.heinzenburger.presenter.GamePresenter;
 
 public class PlayGameUseCase {
     GamePresenter gamePresenter;

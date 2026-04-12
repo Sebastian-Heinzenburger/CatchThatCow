@@ -8,5 +8,6 @@ public class Explore extends GameAction {
     }
 
     @Override
-    public void execute() { }
+    public void execute() {
+    }
 }

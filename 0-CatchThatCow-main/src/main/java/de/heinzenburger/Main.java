@@ -1,5 +1,7 @@
 package de.heinzenburger;
 
+import de.heinzenburger.presenter.GamePresenter;
+
 public class Main {
     public static void main(String[] args) {
         TextInput textInput = new SystemInScannerInput();

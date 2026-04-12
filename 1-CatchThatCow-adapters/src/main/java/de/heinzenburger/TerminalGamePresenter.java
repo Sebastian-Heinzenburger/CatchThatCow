@@ -1,10 +1,11 @@
 package de.heinzenburger;
 
 import de.heinzenburger.gameactions.GameAction;
+import de.heinzenburger.presenter.GamePresenter;
 
 import java.util.List;
 
-public class TerminalGamePresenter implements GamePresenter {
+public class TerminalGamePresenter extends GamePresenter {
     TextPresenter textPresenter;
     TextInput textInput;
 
@@ -23,7 +24,6 @@ public class TerminalGamePresenter implements GamePresenter {
                                                                                                    \s""");
     }
 
-    @Override
     public GameAction chooseGameAction(List<GameAction> availableActions) {
         // print all the available game actions
         List<String> actionNames = availableActions.stream().map(GameAction::getName).toList();
@@ -43,7 +43,6 @@ public class TerminalGamePresenter implements GamePresenter {
         textPresenter.printNumberedList("Inventar", itemDescriptions);
     }
 
-    @Override
     public Direction chooseDirection(MovementOptions movementOptions) {
         char choice = textInput.readChar('N', 'S', 'E', 'W');
         return Direction.fromChar(choice);

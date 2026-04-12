@@ -1,6 +1,7 @@
 package de.heinzenburger;
 
 public class Position {
+    static Position ORIGIN = new Position(0, 0);
     int x;
     int y;
 
@@ -8,8 +9,6 @@ public class Position {
         this.x = x;
         this.y = y;
     }
-
-    static Position ORIGIN = new Position(0, 0);
 
     public int getX() {
         return x;

@@ -2,6 +2,7 @@ package de.heinzenburger;
 
 public interface Random {
     <T> T choose(T[] list);
+
     <T extends Enum<T>> T choose(Class<T> enumClass);
 }
 
