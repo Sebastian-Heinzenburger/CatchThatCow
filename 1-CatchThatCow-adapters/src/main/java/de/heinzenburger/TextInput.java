@@ -1,6 +1,5 @@
 package de.heinzenburger;
 
-public interface UserInput {
-    String readLine();
+public interface TextInput {
     int readInt(int min, int max);
 }

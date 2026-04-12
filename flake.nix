@@ -1,5 +1,5 @@
 {
-  description = "Catch That Cow - A text-based animal catching game";
+  description = "Catch That Cow - A text-based animal catching gamePresenter";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -26,7 +26,7 @@
             echo "Available commands:"
             echo "  mvn clean compile   - Compile the project"
             echo "  mvn clean package   - Build JAR"
-            echo "  mvn exec:java       - Run the game"
+            echo "  mvn exec:java       - Run the gamePresenter"
             echo ""
           '';
 
