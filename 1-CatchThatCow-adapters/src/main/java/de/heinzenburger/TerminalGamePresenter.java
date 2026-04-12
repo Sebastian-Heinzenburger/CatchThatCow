@@ -36,4 +36,16 @@ public class TerminalGamePresenter implements GamePresenter {
         int chosenActionIndex = chosenAction - 1; // convert to zero-based index
         return availableActions.get(chosenActionIndex);
     }
+
+    @Override
+    public void showInventoryItems(List<InventoryItem> animalsInInventory) {
+        List<String> itemDescriptions = animalsInInventory.stream().map(animal -> animal.getTitle() + "\n" + animal.getDescription()).toList();
+        textPresenter.printNumberedList("Inventar", itemDescriptions);
+    }
+
+    @Override
+    public Direction chooseDirection(MovementOptions movementOptions) {
+        char choice = textInput.readChar('N', 'S', 'E', 'W');
+        return Direction.fromChar(choice);
+    }
 }

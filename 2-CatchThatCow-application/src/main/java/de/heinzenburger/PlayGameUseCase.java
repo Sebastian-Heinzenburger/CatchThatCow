@@ -6,9 +6,9 @@ public class PlayGameUseCase {
     GamePresenter gamePresenter;
     GameState gameState;
 
-    public PlayGameUseCase(GamePresenter gamePresenter) {
+    public PlayGameUseCase(GamePresenter gamePresenter, Random random) {
         this.gamePresenter = gamePresenter;
-        this.gameState = new GameState();
+        this.gameState = new GameState(gamePresenter, random);
     }
 
     public void start() {
