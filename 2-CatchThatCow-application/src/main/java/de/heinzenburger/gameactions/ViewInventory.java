@@ -1,19 +1,19 @@
 package de.heinzenburger.gameactions;
 
-import de.heinzenburger.GamePresenter;
 import de.heinzenburger.Inventory;
+import de.heinzenburger.presenter.InventoryPresenter;
 
 public class ViewInventory extends GameAction {
     Inventory inventory;
-    GamePresenter gamePresenter;
+    InventoryPresenter inventoryPresenter;
 
-    public ViewInventory(Inventory inventory, GamePresenter gamePresenter) {
+    public ViewInventory(Inventory inventory, InventoryPresenter inventoryPresenter) {
         this.inventory = inventory;
-        this.gamePresenter = gamePresenter;
+        this.inventoryPresenter = inventoryPresenter;
     }
 
     @Override
     public void execute() {
-        gamePresenter.showInventoryItems(inventory.getInventoryItems());
+        inventoryPresenter.showInventoryItems(inventory.getInventoryItems());
     }
 }

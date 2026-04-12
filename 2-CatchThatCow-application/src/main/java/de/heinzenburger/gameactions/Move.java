@@ -1,6 +1,10 @@
 package de.heinzenburger.gameactions;
 
-import de.heinzenburger.*;
+import de.heinzenburger.Direction;
+import de.heinzenburger.Map;
+import de.heinzenburger.MovementOptions;
+import de.heinzenburger.Player;
+import de.heinzenburger.presenter.GamePresenter;
 
 public class Move extends GameAction {
     GamePresenter gamePresenter;
