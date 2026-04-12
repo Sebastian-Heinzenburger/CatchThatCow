@@ -14,7 +14,9 @@ public class PlayGameUseCase {
 
     public void start() {
         gamePresenter.showWelcomeMessage();
-        GameAction chosenActions = gamePresenter.chooseGameAction(gameState.getAvailableActions());
-        chosenActions.execute();
+        while (true) {
+            GameAction chosenActions = gamePresenter.chooseGameAction(gameState.getAvailableActions());
+            chosenActions.execute();
+        }
     }
 }

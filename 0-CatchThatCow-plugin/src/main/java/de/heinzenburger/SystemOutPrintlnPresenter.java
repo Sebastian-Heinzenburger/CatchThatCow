@@ -11,6 +11,7 @@ public class SystemOutPrintlnPresenter implements TextPresenter {
 
     @Override
     public void printNumberedList(String title, List<String> items) {
+        print(""); // newline
         print(title);
         for (int i = 0; i < items.size(); i++) {
             String item = items.get(i);

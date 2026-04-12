@@ -3,6 +3,7 @@ package de.heinzenburger;
 import de.heinzenburger.gameactions.GameAction;
 import de.heinzenburger.presenter.GamePresenter;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class TerminalGamePresenter extends GamePresenter {
@@ -44,7 +45,36 @@ public class TerminalGamePresenter extends GamePresenter {
     }
 
     public Direction chooseDirection(MovementOptions movementOptions) {
-        char choice = textInput.readChar('N', 'S', 'E', 'W');
+        for (MovementOptions.MovementOption movementOption : movementOptions.getAvailableMovementOptions()) {
+            textPresenter.print(movementOption.getDirection().asChar() + ": " + movementOption.getBiom());
+        }
+        Character[] allowedChars = movementOptions.getAvailableDirections().stream().map(Direction::toChar).toArray(Character[]::new);
+
+        char choice = textInput.readChar(allowedChars);
         return Direction.fromChar(choice);
     }
+
+    @Override
+    public void showMap(Position playerPosition, String[][] map) {
+        textPresenter.print("Map:");
+        // add blue color to the player position
+        map[playerPosition.getX()][playerPosition.getY()] = "\u001B[34m" + map[playerPosition.getX()][playerPosition.getY()] + "\u001B[0m";
+        for (int y = 0; y < map.length; y++) {
+            String row = "";
+            for (int x = 0; x < map[y].length; x++) {
+                row += map[x][y] + " ";
+            }
+            textPresenter.print(row);
+        }
+    }
+
+    @Override
+    public void showLegend(HashMap<String, String> legend) {
+        textPresenter.print("Legend:");
+        for (String key : legend.keySet()) {
+            String value = legend.get(key);
+            textPresenter.print(key + ": " + value);
+        }
+    }
+
 }

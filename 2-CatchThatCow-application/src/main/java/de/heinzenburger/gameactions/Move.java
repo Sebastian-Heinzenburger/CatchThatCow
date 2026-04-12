@@ -19,10 +19,8 @@ public class Move extends GameAction {
 
     @Override
     public void execute() {
-        // let player choose direction to move
-        MovementOptions options = map.getMovementOptions(player);
-        Direction chosenDirection = gamePresenter.chooseDirection(options);
-        // move player in chosen direction
-        Player.move(chosenDirection);
+        MovementOptions possibleDirections = map.getMovementOptions(player);
+        Direction chosenDirection = gamePresenter.chooseDirection(possibleDirections);
+        player.moveInto(chosenDirection);
     }
 }

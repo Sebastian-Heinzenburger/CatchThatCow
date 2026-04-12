@@ -6,9 +6,13 @@ public class Player {
     Inventory inventory;
     Position position;
 
-    public Player(InventoryItem... startItems) {
+    public Player(Position startingPosition, InventoryItem... startItems) {
         this.inventory = new Inventory(List.of(startItems));
-        this.position = new Position(0, 0);
+        this.position = startingPosition;
+    }
+
+    public void moveInto(Direction chosenDirection) {
+        this.position.moveInto(chosenDirection);
     }
 
     public Inventory getInventory() {

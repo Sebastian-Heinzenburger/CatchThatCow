@@ -11,14 +11,17 @@ public class GameState {
     List<GameAction> availableActions;
 
     GameState(GamePresenter presenter, Random random) {
-        player = new Player(new Animal("Kuh"), new Animal("Hase"), new Animal("Eisbär"));
-        map = new Map(3, random);
+        int mapSize = 3;
+        Position startPosition = new Position(mapSize, mapSize);
+        player = new Player(startPosition, new Animal("Kuh"), new Animal("Hase"), new Animal("Eisbär"));
+        map = new Map(mapSize, startPosition, random);
 
-        availableActions = List.of(
-                new Explore(),
-                new Move(player, map, presenter),
-                new ViewInventory(player.getInventory(), presenter),
-                new Quit()
+        availableActions = List.of( //
+                new Explore(), //
+                new Move(player, map, presenter), //
+                new ViewInventory(player.getInventory(), presenter), //
+                new ViewMap(player, map, presenter), //
+                new Quit() //
         );
     }
 

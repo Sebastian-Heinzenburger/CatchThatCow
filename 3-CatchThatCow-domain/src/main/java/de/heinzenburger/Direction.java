@@ -3,7 +3,7 @@ package de.heinzenburger;
 public enum Direction {
     NORTH('N'), EAST('E'), SOUTH('S'), WEST('W');
 
-    final char c;
+    private final char c;
 
     Direction(char c) {
         this.c = c;
@@ -16,5 +16,13 @@ public enum Direction {
             }
         }
         throw new IllegalArgumentException("Invalid direction char: " + c);
+    }
+
+    public char asChar() {
+        return this.c;
+    }
+
+    static char toChar(Direction direction) {
+        return direction.c;
     }
 }

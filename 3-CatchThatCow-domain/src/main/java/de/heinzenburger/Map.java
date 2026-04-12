@@ -1,28 +1,65 @@
 package de.heinzenburger;
 
 public class Map {
-    Biom[][] bioms;
+    Biome[][] biomes;
 
-    public Map(int size, Random random) {
-        bioms = new Biom[size][size];
-        initializeBioms(size, random);
+    public int getBiomeCellCount() {
+        return biomes.length;
     }
 
-    private void initializeBioms(int size, Random random) {
-        for (int x = 0; x < size; x++) {
-            for (int y = 0; y < size; y++) {
-                BiomType biomType = random.choose(BiomType.class);
-                int biomLevel = Math.max(x, y);
-                bioms[x][y] = new Biom(biomType, biomLevel);
+    /*
+
+    mapsize: 2 -> Startingposition: (2,2)
+    +---+---+---+---+---+
+    |   |   |   |   |   |
+    +---+---+---+---+---+
+    |   |   |   |   |   |
+    +---+---+---+---+---+
+    |   |   | P |   |   |
+    +---+---+---+---+---+
+    |   |   |   |   |   |
+    +---+---+---+---+---+
+    |   |   |   |   |   |
+    +---+---+---+---+---+
+
+     */
+
+    public Map(int mapsize, Position startingPosition, Random random) {
+        int biomeCellCount = 2 * mapsize + 1;
+        biomes = new Biome[biomeCellCount][biomeCellCount];
+        initializeBiomes(biomeCellCount, startingPosition, random);
+    }
+
+    private void initializeBiomes(int biomeCellCount, Position startingPosition, Random random) {
+        for (int x = 0; x < biomeCellCount; x++) {
+            for (int y = 0; y < biomeCellCount; y++) {
+                BiomeType biomeType = random.choose(BiomeType.class);
+                int dx = Math.abs(x - startingPosition.getX());
+                int dy = Math.abs(y - startingPosition.getY());
+                int biomeLevel = Math.max(dx, dy);
+                biomes[x][y] = new Biome(biomeType, biomeLevel);
             }
         }
     }
 
-    public Biom getBiomAt(Position position) {
-        return bioms[position.getX()][position.getY()];
+    public Biome getBiomeAt(Position position) {
+        int x = position.getX();
+        int y = position.getY();
+        // return null if position is out of bounds
+        if (x < 0 || x >= biomes.length || y < 0 || y >= biomes[0].length) return null;
+        return biomes[x][y];
     }
 
     public MovementOptions getMovementOptions(Player player) {
+        Position playerPosition = player.getPosition();
 
+        Biome north = getBiomeAt(playerPosition.furtherNorth());
+        Biome east = getBiomeAt(playerPosition.furtherEast());
+        Biome south = getBiomeAt(playerPosition.furtherSouth());
+        Biome west = getBiomeAt(playerPosition.furtherWest());
+
+        return new MovementOptions(north, east, south, west);
     }
+
+
 }
