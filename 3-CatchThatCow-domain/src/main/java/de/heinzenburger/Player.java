@@ -12,7 +12,7 @@ public class Player {
     }
 
     public void moveInto(Direction chosenDirection) {
-        this.position.moveInto(chosenDirection);
+        this.position = this.position.moveInto(chosenDirection);
     }
 
     public Inventory getInventory() {

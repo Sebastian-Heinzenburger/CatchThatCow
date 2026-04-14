@@ -1,6 +1,7 @@
 package de.heinzenburger;
 
 import de.heinzenburger.gameactions.*;
+import de.heinzenburger.position.MapUnit;
 import de.heinzenburger.presenter.GamePresenter;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public class GameState {
     List<GameAction> availableActions;
 
     GameState(GamePresenter presenter, Random random) {
-        int mapSize = 3;
+        MapUnit mapSize = new MapUnit(3);
         Position startPosition = new Position(mapSize, mapSize);
         player = new Player(startPosition, new Animal("Kuh"), new Animal("Hase"), new Animal("Eisbär"));
         map = new Map(mapSize, startPosition, random);

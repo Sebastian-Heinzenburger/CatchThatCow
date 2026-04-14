@@ -1,5 +1,7 @@
 package de.heinzenburger;
 
+import de.heinzenburger.position.MapUnit;
+
 public class Map {
     Biome[][] biomes;
 
@@ -24,8 +26,8 @@ public class Map {
 
      */
 
-    public Map(int mapsize, Position startingPosition, Random random) {
-        int biomeCellCount = 2 * mapsize + 1;
+    public Map(MapUnit mapSize, Position startingPosition, Random random) {
+        int biomeCellCount = 2 * mapSize.toInt() + 1;
         biomes = new Biome[biomeCellCount][biomeCellCount];
         initializeBiomes(biomeCellCount, startingPosition, random);
     }

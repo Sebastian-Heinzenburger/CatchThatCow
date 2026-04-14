@@ -1,38 +1,36 @@
 package de.heinzenburger;
 
+import de.heinzenburger.position.MapUnit;
+
 public class Position {
     static Position ORIGIN = new Position(0, 0);
-    private int x;
-    private int y;
+    private final MapUnit x;
+    private final MapUnit y;
 
-    public Position(int x, int y) {
+    public Position(MapUnit x, MapUnit y) {
         this.x = x;
         this.y = y;
+    }
+
+    public Position(int x, int y) {
+        this(new MapUnit(x), new MapUnit(y));
     }
 
     public int getX() {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
     public int getY() {
         return y;
     }
 
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public void moveInto(Direction direction) {
-        switch (direction) {
-            case NORTH -> y++;
-            case SOUTH -> y--;
-            case EAST -> x++;
-            case WEST -> x--;
-        }
+    public Position moveInto(Direction direction) {
+        return switch (direction) {
+            case NORTH -> this.furtherNorth();
+            case SOUTH -> this.furtherSouth();
+            case EAST -> this.furtherEast();
+            case WEST -> this.furtherWest();
+        };
     }
 
     public Position furtherNorth() {
