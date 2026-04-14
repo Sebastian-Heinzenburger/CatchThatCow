@@ -13,6 +13,14 @@ public final class MapUnit {
         return this.value;
     }
 
+    public MapUnit increment() {
+        return new MapUnit(this.value + 1);
+    }
+
+    public MapUnit decrement() {
+        return new MapUnit(this.value - 1);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

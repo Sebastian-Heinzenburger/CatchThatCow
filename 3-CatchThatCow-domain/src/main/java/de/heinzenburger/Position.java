@@ -16,11 +16,11 @@ public class Position {
         this(new MapUnit(x), new MapUnit(y));
     }
 
-    public int getX() {
+    public MapUnit getX() {
         return x;
     }
 
-    public int getY() {
+    public MapUnit getY() {
         return y;
     }
 
@@ -34,18 +34,18 @@ public class Position {
     }
 
     public Position furtherNorth() {
-        return new Position(x, y - 1);
+        return new Position(x, y.decrement());
     }
 
     public Position furtherSouth() {
-        return new Position(x, y + 1);
+        return new Position(x, y.increment());
     }
 
     public Position furtherEast() {
-        return new Position(x + 1, y);
+        return new Position(x.increment(), y);
     }
 
     public Position furtherWest() {
-        return new Position(x - 1, y);
+        return new Position(x.decrement(), y);
     }
 }
