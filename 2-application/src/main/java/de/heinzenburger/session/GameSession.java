@@ -3,9 +3,7 @@ package de.heinzenburger.session;
 import de.heinzenburger.animal.Animal;
 import de.heinzenburger.battle.Battle;
 import de.heinzenburger.player.Player;
-import de.heinzenburger.session.state.EncounterPendingState;
 import de.heinzenburger.session.state.ExploringState;
-import de.heinzenburger.session.state.InBattleState;
 import de.heinzenburger.session.state.SessionState;
 import de.heinzenburger.world.World;
 
@@ -35,17 +33,11 @@ public class GameSession {
     }
 
     public Battle getCurrentBattle() {
-        if (state instanceof InBattleState battleState) {
-            return battleState.getBattle();
-        }
-        return null;
+        return state.getCurrentBattle().orElse(null);
     }
 
     public Animal getEncounteredAnimal() {
-        if (state instanceof EncounterPendingState encounterState) {
-            return encounterState.getEncounteredAnimal();
-        }
-        return null;
+        return state.getEncounteredAnimal().orElse(null);
     }
 
     public GamePhase getPhase() {

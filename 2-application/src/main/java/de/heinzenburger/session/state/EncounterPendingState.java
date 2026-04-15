@@ -4,6 +4,8 @@ import de.heinzenburger.animal.Animal;
 import de.heinzenburger.battle.Battle;
 import de.heinzenburger.session.GamePhase;
 
+import java.util.Optional;
+
 /**
  * Player has encountered an animal and must decide to fight or flee.
  * Can transition to IN_BATTLE or back to EXPLORING.
@@ -39,8 +41,9 @@ public class EncounterPendingState implements SessionState {
         return encounteredAnimal.isPrey();
     }
 
-    public Animal getEncounteredAnimal() {
-        return encounteredAnimal;
+    @Override
+    public Optional<Animal> getEncounteredAnimal() {
+        return Optional.of(encounteredAnimal);
     }
 
     @Override

@@ -4,6 +4,8 @@ import de.heinzenburger.animal.Animal;
 import de.heinzenburger.battle.Battle;
 import de.heinzenburger.session.GamePhase;
 
+import java.util.Optional;
+
 /**
  * Player is currently in battle.
  * Can only transition back to EXPLORING when battle ends.
@@ -39,8 +41,9 @@ public class InBattleState implements SessionState {
         return battle.canFlee();
     }
 
-    public Battle getBattle() {
-        return battle;
+    @Override
+    public Optional<Battle> getCurrentBattle() {
+        return Optional.of(battle);
     }
 
     @Override
