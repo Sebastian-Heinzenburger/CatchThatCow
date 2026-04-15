@@ -12,15 +12,9 @@ public class Biome {
     private final int distanceFromStart;
 
     public Biome(Position position, BiomeType type, int distanceFromStart) {
-        if (position == null) {
-            throw new IllegalArgumentException("Position cannot be null");
-        }
-        if (type == null) {
-            throw new IllegalArgumentException("Type cannot be null");
-        }
-        if (distanceFromStart < 0) {
-            throw new IllegalArgumentException("Distance from start cannot be negative");
-        }
+        if (position == null) throw new IllegalArgumentException("Position cannot be null");
+        if (type == null) throw new IllegalArgumentException("Type cannot be null");
+        if (distanceFromStart < 0) throw new IllegalArgumentException("Distance from start cannot be negative");
 
         this.position = position;
         this.type = type;
@@ -44,9 +38,7 @@ public class Biome {
     }
 
     public boolean canContainSpecies(AnimalSpecies species) {
-        if (species == null) {
-            return false;
-        }
+        if (species == null) return false;
         return species.getHabitat() == this.type && species.getLevel() == getAnimalLevel();
     }
 
@@ -65,10 +57,6 @@ public class Biome {
 
     @Override
     public String toString() {
-        return "Biome{" +
-                "position=" + position +
-                ", type=" + type +
-                ", level=" + getAnimalLevel() +
-                '}';
+        return "Biome{" + "position=" + position + ", type=" + type + ", level=" + getAnimalLevel() + '}';
     }
 }

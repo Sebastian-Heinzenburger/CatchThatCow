@@ -3,11 +3,7 @@ package de.heinzenburger.player;
 import de.heinzenburger.animal.Animal;
 import de.heinzenburger.animal.AnimalSpecies;
 import de.heinzenburger.player.exception.InsufficientAnimalsException;
-import de.heinzenburger.shared.AnimalStats;
-import de.heinzenburger.shared.AnimalType;
-import de.heinzenburger.shared.BiomeType;
-import de.heinzenburger.shared.RandomTestAdapter;
-import de.heinzenburger.shared.StatCategory;
+import de.heinzenburger.shared.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;
@@ -115,6 +111,26 @@ class InventoryTest {
         Inventory inventory = new Inventory(new RandomTestAdapter());
 
         assertThrows(InsufficientAnimalsException.class, () -> inventory.selectRandomForBattle(3));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSelectingNegativeCount() {
+        Inventory inventory = new Inventory(new RandomTestAdapter());
+        assertThrows(IllegalArgumentException.class, () -> inventory.selectRandomForBattle(-1));
+    }
+
+    @Test
+    void shouldSelectOnlyTwoAnimalsForBattleWhenThereAreOnlyTwo() throws InsufficientAnimalsException {
+        Inventory inventory = new Inventory(new RandomTestAdapter());
+        Animal animal1 = createTestAnimal();
+        Animal animal2 = createTestAnimal();
+
+        inventory.add(animal1);
+        inventory.add(animal2);
+
+        List<Animal> battleAnimals = inventory.selectRandomForBattle(3);
+
+        assertEquals(2, battleAnimals.size());
     }
 
     @Test

@@ -13,42 +13,30 @@ public class Inventory {
     private final RandomNumberGenerator random;
 
     public Inventory(RandomNumberGenerator random) {
-        if (random == null) {
-            throw new IllegalArgumentException("Random cannot be null");
-        }
+        if (random == null) throw new IllegalArgumentException("Random cannot be null");
         this.animals = new ArrayList<>();
         this.random = random;
     }
 
     public void add(Animal animal) {
-        if (animal == null) {
-            throw new IllegalArgumentException("Animal cannot be null");
-        }
+        if (animal == null) throw new IllegalArgumentException("Animal cannot be null");
         animals.add(animal);
     }
 
     public void remove(Animal animal) {
-        if (animal == null) {
-            throw new IllegalArgumentException("Animal cannot be null");
-        }
+        if (animal == null) throw new IllegalArgumentException("Animal cannot be null");
         animals.remove(animal);
     }
 
     public Animal removeRandom() throws InsufficientAnimalsException {
-        if (animals.isEmpty()) {
-            throw new InsufficientAnimalsException(1, 0);
-        }
+        if (animals.isEmpty()) throw new InsufficientAnimalsException(1, 0);
         int index = random.nextInt(animals.size());
         return animals.remove(index);
     }
 
     public List<Animal> selectRandomForBattle(int count) throws InsufficientAnimalsException {
-        if (count < 0) {
-            throw new IllegalArgumentException("Count cannot be negative");
-        }
-        if (animals.isEmpty()) {
-            throw new InsufficientAnimalsException(count, 0);
-        }
+        if (count < 0) throw new IllegalArgumentException("Count cannot be negative");
+        if (animals.isEmpty()) throw new InsufficientAnimalsException(count, 0);
         int selectCount = Math.min(count, animals.size());
 
         List<Animal> allAnimals = new ArrayList<>(animals);

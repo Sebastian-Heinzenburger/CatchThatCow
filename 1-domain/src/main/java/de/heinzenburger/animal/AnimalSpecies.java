@@ -13,21 +13,11 @@ public final class AnimalSpecies {
     private final BiomeType habitat;
 
     public AnimalSpecies(String name, int level, AnimalType type, AnimalStats baseStats, BiomeType habitat) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be null or empty");
-        }
-        if (level < 1 || level > 3) {
-            throw new IllegalArgumentException("Level must be between 1 and 3");
-        }
-        if (type == null) {
-            throw new IllegalArgumentException("Type cannot be null");
-        }
-        if (baseStats == null) {
-            throw new IllegalArgumentException("Base stats cannot be null");
-        }
-        if (habitat == null) {
-            throw new IllegalArgumentException("Habitat cannot be null");
-        }
+        if (name == null || name.trim().isEmpty()) throw new IllegalArgumentException("Name cannot be null or empty");
+        if (level < 1 || level > 3) throw new IllegalArgumentException("Level must be between 1 and 3");
+        if (type == null) throw new IllegalArgumentException("Type cannot be null");
+        if (baseStats == null) throw new IllegalArgumentException("Base stats cannot be null");
+        if (habitat == null) throw new IllegalArgumentException("Habitat cannot be null");
 
         this.name = name;
         this.level = level;
@@ -36,17 +26,18 @@ public final class AnimalSpecies {
         this.habitat = habitat;
     }
 
+    private static int varyStatByUptoPercent(int baseStat, double percent, RandomNumberGenerator random) {
+        double variation = 1.0 + ((random.nextDouble() * 2 - 1) * percent);
+        return (int) Math.round(baseStat * variation);
+    }
+
     public Animal generateAnimalWithSlightStatVariation(RandomNumberGenerator random) {
-        if (random == null) {
-            throw new IllegalArgumentException("Random cannot be null");
-        }
+        if (random == null) throw new IllegalArgumentException("Random cannot be null");
         Map<StatCategory, Integer> variedStats = new EnumMap<>(StatCategory.class);
 
         for (StatCategory category : StatCategory.values()) {
             int baseStat = baseStats.getStat(category);
-            // Vary by ±10%
-            double variation = 0.9 + (random.nextDouble() * 0.2); // 0.9 to 1.1
-            int variedStat = (int) Math.round(baseStat * variation);
+            int variedStat = varyStatByUptoPercent(baseStat, 0.10, random);
             variedStats.put(category, Math.max(1, variedStat)); // Ensure at least 1
         }
 

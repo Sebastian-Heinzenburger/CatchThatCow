@@ -2,7 +2,10 @@ package de.heinzenburger.world;
 
 import de.heinzenburger.shared.Position;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
 
 public class World {
     private final WorldId id;
@@ -15,18 +18,10 @@ public class World {
     }
 
     public World(WorldId id, int size, Position startPosition, Map<Position, Biome> biomes) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
-        }
-        if (size <= 0) {
-            throw new IllegalArgumentException("Size must be positive");
-        }
-        if (startPosition == null) {
-            throw new IllegalArgumentException("Start position cannot be null");
-        }
-        if (biomes == null || biomes.isEmpty()) {
-            throw new IllegalArgumentException("Biomes cannot be null or empty");
-        }
+        if (id == null) throw new IllegalArgumentException("ID cannot be null");
+        if (size <= 0) throw new IllegalArgumentException("Size must be positive");
+        if (startPosition == null) throw new IllegalArgumentException("Start position cannot be null");
+        if (biomes == null || biomes.isEmpty()) throw new IllegalArgumentException("Biomes cannot be null or empty");
 
         this.id = id;
         this.size = size;
@@ -53,23 +48,15 @@ public class World {
     public Map<Direction, Biome> getAdjacentBiomes(Position position) {
         Map<Direction, Biome> adjacent = new EnumMap<>(Direction.class);
 
-        Position north = new Position(position.getX(), position.getY() - 1);
-        Position east = new Position(position.getX() + 1, position.getY());
-        Position south = new Position(position.getX(), position.getY() + 1);
-        Position west = new Position(position.getX() - 1, position.getY());
+        Position north = position.northernNeighbour();
+        Position east = position.easternNeighbour();
+        Position south = position.southernNeighbour();
+        Position west = position.westernNeighbour();
 
-        if (biomes.containsKey(north)) {
-            adjacent.put(Direction.NORTH, biomes.get(north));
-        }
-        if (biomes.containsKey(east)) {
-            adjacent.put(Direction.EAST, biomes.get(east));
-        }
-        if (biomes.containsKey(south)) {
-            adjacent.put(Direction.SOUTH, biomes.get(south));
-        }
-        if (biomes.containsKey(west)) {
-            adjacent.put(Direction.WEST, biomes.get(west));
-        }
+        if (biomes.containsKey(north)) adjacent.put(Direction.NORTH, biomes.get(north));
+        if (biomes.containsKey(east)) adjacent.put(Direction.EAST, biomes.get(east));
+        if (biomes.containsKey(south)) adjacent.put(Direction.SOUTH, biomes.get(south));
+        if (biomes.containsKey(west)) adjacent.put(Direction.WEST, biomes.get(west));
 
         return adjacent;
     }
@@ -84,9 +71,6 @@ public class World {
 
     @Override
     public String toString() {
-        return "World{" +
-                "size=" + size +
-                ", biomes=" + biomes.size() +
-                '}';
+        return "World{" + "size=" + size + ", biomes=" + biomes.size() + '}';
     }
 }

@@ -27,7 +27,7 @@ class BattleInventoryTest {
         BattleInventory inventory = new BattleInventory(animals);
         Animal animal = animals.get(0);
 
-        inventory.use(animal);
+        inventory.markAsUsed(animal);
 
         assertEquals(2, inventory.getAvailableAnimals().size());
         assertFalse(inventory.getAvailableAnimals().contains(animal));
@@ -39,7 +39,7 @@ class BattleInventoryTest {
         BattleInventory inventory = new BattleInventory(animals);
         Animal outsideAnimal = createAnimal();
 
-        assertThrows(IllegalArgumentException.class, () -> inventory.use(outsideAnimal));
+        assertThrows(IllegalArgumentException.class, () -> inventory.markAsUsed(outsideAnimal));
     }
 
     @Test
@@ -48,9 +48,9 @@ class BattleInventoryTest {
         BattleInventory inventory = new BattleInventory(animals);
         Animal animal = animals.get(0);
 
-        inventory.use(animal);
+        inventory.markAsUsed(animal);
 
-        assertThrows(IllegalStateException.class, () -> inventory.use(animal));
+        assertThrows(IllegalStateException.class, () -> inventory.markAsUsed(animal));
     }
 
     @Test
@@ -58,9 +58,9 @@ class BattleInventoryTest {
         List<Animal> animals = createAnimals(3);
         BattleInventory inventory = new BattleInventory(animals);
 
-        inventory.use(animals.get(0));
-        inventory.use(animals.get(1));
-        inventory.use(animals.get(2));
+        inventory.markAsUsed(animals.get(0));
+        inventory.markAsUsed(animals.get(1));
+        inventory.markAsUsed(animals.get(2));
 
         assertFalse(inventory.hasAvailableAnimals());
         assertEquals(0, inventory.getAvailableAnimals().size());

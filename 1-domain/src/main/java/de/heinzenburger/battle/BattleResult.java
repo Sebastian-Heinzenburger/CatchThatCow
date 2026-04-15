@@ -4,18 +4,15 @@ import de.heinzenburger.animal.Animal;
 
 import java.util.Objects;
 
+// TODO: use this class
 public final class BattleResult {
     private final RoundWinner winner;
     private final Animal opponentAnimal;
     private final Animal lostAnimal;
 
     public BattleResult(RoundWinner winner, Animal opponentAnimal, Animal lostAnimal) {
-        if (winner == null) {
-            throw new IllegalArgumentException("Winner cannot be null");
-        }
-        if (opponentAnimal == null) {
-            throw new IllegalArgumentException("Opponent animal cannot be null");
-        }
+        if (winner == null) throw new IllegalArgumentException("Winner cannot be null");
+        if (opponentAnimal == null) throw new IllegalArgumentException("Opponent animal cannot be null");
 
         this.winner = winner;
         this.opponentAnimal = opponentAnimal;
@@ -39,9 +36,7 @@ public final class BattleResult {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BattleResult that = (BattleResult) o;
-        return winner == that.winner &&
-                Objects.equals(opponentAnimal, that.opponentAnimal) &&
-                Objects.equals(lostAnimal, that.lostAnimal);
+        return winner == that.winner && Objects.equals(opponentAnimal, that.opponentAnimal) && Objects.equals(lostAnimal, that.lostAnimal);
     }
 
     @Override
@@ -51,10 +46,6 @@ public final class BattleResult {
 
     @Override
     public String toString() {
-        return "BattleResult{" +
-                "winner=" + winner +
-                ", opponentAnimal=" + opponentAnimal +
-                ", lostAnimal=" + lostAnimal +
-                '}';
+        return "BattleResult{" + "winner=" + winner + ", opponentAnimal=" + opponentAnimal + ", lostAnimal=" + lostAnimal + '}';
     }
 }

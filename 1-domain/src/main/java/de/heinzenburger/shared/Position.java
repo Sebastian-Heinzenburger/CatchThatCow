@@ -1,6 +1,5 @@
 package de.heinzenburger.shared;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,12 +25,23 @@ public final class Position {
     }
 
     public List<Position> adjacentPositions() {
-        List<Position> adjacent = new ArrayList<>();
-        adjacent.add(new Position(x, y - 1)); // North
-        adjacent.add(new Position(x + 1, y)); // East
-        adjacent.add(new Position(x, y + 1)); // South
-        adjacent.add(new Position(x - 1, y)); // West
-        return adjacent;
+        return List.of(northernNeighbour(), easternNeighbour(), southernNeighbour(), westernNeighbour());
+    }
+
+    public Position northernNeighbour() {
+        return new Position(x, y - 1);
+    }
+
+    public Position easternNeighbour() {
+        return new Position(x + 1, y);
+    }
+
+    public Position southernNeighbour() {
+        return new Position(x, y + 1);
+    }
+
+    public Position westernNeighbour() {
+        return new Position(x - 1, y);
     }
 
     @Override

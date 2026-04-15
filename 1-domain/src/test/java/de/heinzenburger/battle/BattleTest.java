@@ -4,7 +4,6 @@ import de.heinzenburger.animal.Animal;
 import de.heinzenburger.animal.AnimalSpecies;
 import de.heinzenburger.battle.exception.AnimalNotAvailableException;
 import de.heinzenburger.battle.exception.BattleAlreadyStartedException;
-import de.heinzenburger.battle.exception.BattleNotInProgressException;
 import de.heinzenburger.battle.exception.NotPlayersTurnException;
 import de.heinzenburger.shared.*;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ class BattleTest {
 
         Battle battle = new Battle(predator, battleInventory, new RandomTestAdapter());
 
-        assertEquals(BattleState.NOT_STARTED, battle.getState());
+        assertEquals(BattleProgressState.NOT_STARTED, battle.getState());
         assertEquals(predator, battle.getOpponentAnimal());
         assertEquals(0, battle.getPlayerScore());
         assertEquals(0, battle.getOpponentScore());
@@ -49,7 +48,7 @@ class BattleTest {
         Battle battle = createTestBattle();
         battle.startBattle();
 
-        assertEquals(BattleState.IN_PROGRESS, battle.getState());
+        assertEquals(BattleProgressState.IN_PROGRESS, battle.getState());
     }
 
     @Test

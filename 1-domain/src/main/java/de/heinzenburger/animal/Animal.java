@@ -16,15 +16,9 @@ public class Animal {
     }
 
     public Animal(AnimalId id, AnimalSpecies species, AnimalStats actualStats) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
-        }
-        if (species == null) {
-            throw new IllegalArgumentException("Species cannot be null");
-        }
-        if (actualStats == null) {
-            throw new IllegalArgumentException("Actual stats cannot be null");
-        }
+        if (id == null) throw new IllegalArgumentException("ID cannot be null");
+        if (species == null) throw new IllegalArgumentException("Species cannot be null");
+        if (actualStats == null) throw new IllegalArgumentException("Actual stats cannot be null");
 
         this.id = id;
         this.species = species;

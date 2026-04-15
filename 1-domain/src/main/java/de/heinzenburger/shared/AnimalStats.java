@@ -9,16 +9,13 @@ public final class AnimalStats {
     private final Map<StatCategory, Integer> stats;
 
     public AnimalStats(Map<StatCategory, Integer> stats) {
-        if (stats == null || stats.isEmpty()) {
-            throw new IllegalArgumentException("Stats cannot be null or empty");
-        }
+        if (stats == null || stats.isEmpty())
+            throw new IllegalArgumentException("Stats cannot be null or empty: " + stats);
         for (StatCategory category : StatCategory.values()) {
-            if (!stats.containsKey(category)) {
+            if (!stats.containsKey(category))
                 throw new IllegalArgumentException("Missing stat for category: " + category);
-            }
-            if (stats.get(category) < 0) {
+            if (stats.get(category) < 0)
                 throw new IllegalArgumentException("Stat value cannot be negative for category: " + category);
-            }
         }
         this.stats = new EnumMap<>(stats);
     }

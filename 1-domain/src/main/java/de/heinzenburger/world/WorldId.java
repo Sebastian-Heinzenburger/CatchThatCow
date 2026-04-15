@@ -11,9 +11,7 @@ public final class WorldId {
     }
 
     public WorldId(UUID value) {
-        if (value == null) {
-            throw new IllegalArgumentException("ID value cannot be null");
-        }
+        if (value == null) throw new IllegalArgumentException("ID value cannot be null");
         this.value = value;
     }
 

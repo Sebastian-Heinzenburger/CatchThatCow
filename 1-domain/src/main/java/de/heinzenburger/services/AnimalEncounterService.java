@@ -11,28 +11,19 @@ public class AnimalEncounterService {
     private final RandomNumberGenerator random;
 
     public AnimalEncounterService(RandomNumberGenerator random) {
-        if (random == null) {
-            throw new IllegalArgumentException("Random cannot be null");
-        }
+        if (random == null) throw new IllegalArgumentException("Random cannot be null");
         this.random = random;
     }
 
     public Animal encounterAnimal(Biome biome, List<AnimalSpecies> availableSpecies) {
-        if (biome == null) {
-            throw new IllegalArgumentException("Biome cannot be null");
-        }
-        if (availableSpecies == null || availableSpecies.isEmpty()) {
+        if (biome == null) throw new IllegalArgumentException("Biome cannot be null");
+        if (availableSpecies == null || availableSpecies.isEmpty())
             throw new IllegalArgumentException("Available species cannot be null or empty");
-        }
 
-        // Filter species that can live in this biome
-        List<AnimalSpecies> compatibleSpecies = availableSpecies.stream()
-                .filter(biome::canContainSpecies)
-                .toList();
+        List<AnimalSpecies> compatibleSpecies = availableSpecies.stream().filter(biome::canContainSpecies).toList();
 
-        if (compatibleSpecies.isEmpty()) {
+        if (compatibleSpecies.isEmpty())
             throw new IllegalStateException("No compatible species found for biome: " + biome);
-        }
 
         // Randomly select a species
         AnimalSpecies selectedSpecies = compatibleSpecies.get(random.nextInt(compatibleSpecies.size()));

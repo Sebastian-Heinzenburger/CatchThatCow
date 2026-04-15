@@ -16,15 +16,9 @@ public class Player {
     }
 
     public Player(PlayerId id, Inventory inventory, Position currentPosition) {
-        if (id == null) {
-            throw new IllegalArgumentException("ID cannot be null");
-        }
-        if (inventory == null) {
-            throw new IllegalArgumentException("Inventory cannot be null");
-        }
-        if (currentPosition == null) {
-            throw new IllegalArgumentException("Current position cannot be null");
-        }
+        if (id == null) throw new IllegalArgumentException("ID cannot be null");
+        if (inventory == null) throw new IllegalArgumentException("Inventory cannot be null");
+        if (currentPosition == null) throw new IllegalArgumentException("Current position cannot be null");
 
         this.id = id;
         this.inventory = inventory;
@@ -52,18 +46,13 @@ public class Player {
     }
 
     public void moveTo(Position newPosition) {
-        if (newPosition == null) {
-            throw new IllegalArgumentException("New position cannot be null");
-        }
+        if (newPosition == null) throw new IllegalArgumentException("New position cannot be null");
         this.currentPosition = newPosition;
     }
 
     @Override
     public String toString() {
-        return "Player{" +
-                "position=" + currentPosition +
-                ", animals=" + inventory.size() +
-                '}';
+        return "Player{" + "position=" + currentPosition + ", animals=" + inventory.size() + '}';
     }
 
     @Override

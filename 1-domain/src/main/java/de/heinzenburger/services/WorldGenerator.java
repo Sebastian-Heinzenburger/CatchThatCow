@@ -6,22 +6,21 @@ import de.heinzenburger.shared.RandomNumberGenerator;
 import de.heinzenburger.world.Biome;
 import de.heinzenburger.world.World;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WorldGenerator {
     private final RandomNumberGenerator random;
 
     public WorldGenerator(RandomNumberGenerator random) {
-        if (random == null) {
+        if (random == null)
             throw new IllegalArgumentException("Random cannot be null");
-        }
         this.random = random;
     }
 
     public World generateWorld(int n) {
-        if (n <= 0) {
+        if (n <= 0)
             throw new IllegalArgumentException("n must be positive");
-        }
 
         int gridSize = 2 * n + 1;
         Position startPosition = new Position(n, n); // Center of the grid

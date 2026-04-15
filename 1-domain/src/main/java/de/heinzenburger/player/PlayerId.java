@@ -11,9 +11,7 @@ public final class PlayerId {
     }
 
     public PlayerId(UUID value) {
-        if (value == null) {
-            throw new IllegalArgumentException("ID value cannot be null");
-        }
+        if (value == null) throw new IllegalArgumentException("ID value cannot be null");
         this.value = value;
     }
 

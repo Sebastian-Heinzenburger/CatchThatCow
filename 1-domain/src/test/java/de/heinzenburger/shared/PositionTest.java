@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class PositionTest {
 
@@ -28,10 +29,11 @@ class PositionTest {
         List<Position> adjacent = center.adjacentPositions();
 
         assertEquals(4, adjacent.size());
-        assertTrue(adjacent.contains(new Position(5, 4))); // North
-        assertTrue(adjacent.contains(new Position(6, 5))); // East
-        assertTrue(adjacent.contains(new Position(5, 6))); // South
-        assertTrue(adjacent.contains(new Position(4, 5))); // West
+        assertEquals(adjacent, List.of(new Position(5, 4), // North
+                new Position(6, 5), // East
+                new Position(5, 6), // South
+                new Position(4, 5)  // West
+        ));
     }
 
     @Test
