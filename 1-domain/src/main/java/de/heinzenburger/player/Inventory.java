@@ -40,7 +40,7 @@ public class Inventory {
         int selectCount = Math.min(count, animals.size());
 
         List<Animal> allAnimals = new ArrayList<>(animals);
-        // Fisher-Yates shuffle algorithm TODO: Move this into abstraction layer
+        // Fisher-Yates shuffle algorithm
         for (int i = allAnimals.size() - 1; i > 0; i--) {
             int j = random.nextInt(i + 1);
             Animal temp = allAnimals.get(i);
