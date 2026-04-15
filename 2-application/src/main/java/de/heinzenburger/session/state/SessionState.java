@@ -9,20 +9,31 @@ import java.util.Optional;
 /**
  * State interface for the GameSession state machine.
  * Each state knows its valid transitions and operations.
+ * Default implementations return false/throw for operations not supported in most states.
  */
 public interface SessionState {
 
     GamePhase getPhase();
 
-    boolean canMove();
+    default boolean canMove() {
+        return false;
+    }
 
-    boolean canStartBattle();
+    default boolean canStartBattle() {
+        return false;
+    }
 
-    boolean canFlee();
+    default boolean canFlee() {
+        return false;
+    }
 
-    SessionState transitionToEncounter(Animal animal);
+    default SessionState transitionToEncounter(Animal animal) {
+        throw new IllegalStateException("Cannot transition to encounter from " + getPhase());
+    }
 
-    SessionState transitionToBattle(Battle battle);
+    default SessionState transitionToBattle(Battle battle) {
+        throw new IllegalStateException("Cannot transition to battle from " + getPhase());
+    }
 
     SessionState transitionToExploring();
 

@@ -2,175 +2,137 @@ package de.heinzenburger.battle;
 
 import de.heinzenburger.animal.Animal;
 import de.heinzenburger.battle.exception.*;
+import de.heinzenburger.battle.opponentstrategy.OpponentStrategy;
+import de.heinzenburger.battle.opponentstrategy.RandomOpponentStrategy;
 import de.heinzenburger.shared.RandomNumberGenerator;
 import de.heinzenburger.shared.StatCategory;
 
 import java.util.Collections;
 import java.util.List;
 
-// TODO: Refactor this god class
 public class Battle {
-    private final Animal opponentAnimal;
+
+    private final TurnManager turnManager;
     private final BattleInventory playerBattleInventory;
-    private final RandomNumberGenerator random;
-    private Score playerScore;
-    private Score opponentScore;
-    private BattleProgressState state;
-    private boolean playerTurn;
-    private StatCategory opponentSelectedCategory;
+    private final Animal opponentAnimal;
+    private final OpponentStrategy opponentStrategy;
+    private BattleState state;
 
     public Battle(Animal opponentAnimal, BattleInventory playerBattleInventory, RandomNumberGenerator random) {
         if (opponentAnimal == null) throw new IllegalArgumentException("Opponent animal cannot be null");
         if (playerBattleInventory == null) throw new IllegalArgumentException("Player battle inventory cannot be null");
         if (random == null) throw new IllegalArgumentException("Random cannot be null");
 
-        this.opponentAnimal = opponentAnimal;
+        this.state = new BattleState.NotStarted();
+        this.turnManager = new TurnManager(opponentAnimal.isPrey());
         this.playerBattleInventory = playerBattleInventory;
-        this.playerTurn = opponentAnimal.isPrey();
-        this.random = random;
-        this.playerScore = new Score();
-        this.opponentScore = new Score();
-        this.state = BattleProgressState.NOT_STARTED;
+        this.opponentAnimal = opponentAnimal;
+        this.opponentStrategy = new RandomOpponentStrategy(random);
     }
 
     public void startBattle() throws BattleAlreadyStartedException {
-        if (state != BattleProgressState.NOT_STARTED) throw new BattleAlreadyStartedException();
-        this.state = BattleProgressState.IN_PROGRESS;
+        if (!(state instanceof BattleState.NotStarted)) throw new BattleAlreadyStartedException();
+        this.state = new BattleState.InProgress();
     }
 
     public RoundResult playerAttack(Animal selectedAnimal, StatCategory category) throws BattleNotInProgressException, NotPlayersTurnException, AnimalNotAvailableException {
-        if (selectedAnimal == null) throw new IllegalArgumentException("Selected animal cannot be null");
+        if (!(state instanceof BattleState.InProgress inProgress)) throw new BattleNotInProgressException();
+        if (!turnManager.isPlayerTurn()) throw new NotPlayersTurnException();
         if (category == null) throw new IllegalArgumentException("Category cannot be null");
 
-        if (state != BattleProgressState.IN_PROGRESS) throw new BattleNotInProgressException();
-        if (!playerTurn) throw new NotPlayersTurnException();
-        validateAnimalAvailable(selectedAnimal);
-
-        RoundResult result = executeRound(selectedAnimal, category);
-        updateStateAfterRound(false);
-
-        return result;
-    }
-
-    private void clearOpponentSelectedCategory() {
-        opponentSelectedCategory = null;
+        ensureAnimalIsAvailable(selectedAnimal);
+        return executeRound(selectedAnimal, category, inProgress);
     }
 
     public RoundResult opponentAttack(Animal selectedAnimal) throws BattleNotInProgressException, NotPlayersTurnException, AnimalNotAvailableException, NoMoreAnimalsAvailableException {
-        if (state != BattleProgressState.IN_PROGRESS) throw new BattleNotInProgressException();
-        if (playerTurn) throw new NotPlayersTurnException("It is not the opponent's turn");
-        if (selectedAnimal == null) throw new IllegalArgumentException("Selected animal cannot be null");
+        if (!(state instanceof BattleState.InProgress inProgress)) throw new BattleNotInProgressException();
+        if (turnManager.isPlayerTurn()) throw new NotPlayersTurnException("It is not the opponent's turn");
         if (!playerBattleInventory.hasAvailableAnimals()) throw new NoMoreAnimalsAvailableException();
-        validateAnimalAvailable(selectedAnimal);
 
-        StatCategory category = getOpponentSelectedCategoryInternal();
-        RoundResult result = executeRound(selectedAnimal, category);
-        updateStateAfterRound(true);
-
+        ensureAnimalIsAvailable(selectedAnimal);
+        RoundResult result = executeRound(selectedAnimal, opponentStrategy.selectCategory(), inProgress);
+        opponentStrategy.reset();
         return result;
     }
 
-    private void validateAnimalAvailable(Animal animal) throws AnimalNotAvailableException {
-        if (!playerBattleInventory.getAvailableAnimals().contains(animal)) {
-            throw new AnimalNotAvailableException(animal);
-        }
+    private void ensureAnimalIsAvailable(Animal selectedAnimal) throws AnimalNotAvailableException {
+        if (selectedAnimal == null) throw new IllegalArgumentException("Selected animal cannot be null");
+        if (!playerBattleInventory.getAvailableAnimals().contains(selectedAnimal))
+            throw new AnimalNotAvailableException(selectedAnimal);
     }
 
-    private RoundResult executeRound(Animal selectedAnimal, StatCategory category) {
+
+    private RoundResult executeRound(Animal selectedAnimal, StatCategory category, BattleState.InProgress currentState) {
         playerBattleInventory.markAsUsed(selectedAnimal);
 
-        int playerStatValue = selectedAnimal.getStat(category);
-        int opponentStatValue = opponentAnimal.getStat(category);
+        int statValuePlayer = selectedAnimal.getStat(category);
+        int statValueOpponent = opponentAnimal.getStat(category);
 
-        RoundWinner winner;
-        if (playerStatValue > opponentStatValue) {
-            winner = RoundWinner.PLAYER;
-            playerScore = playerScore.increment();
-        } else {
-            winner = RoundWinner.OPPONENT;
-            opponentScore = opponentScore.increment();
-        }
+        RoundWinner winner = statValuePlayer > statValueOpponent ? RoundWinner.PLAYER : RoundWinner.OPPONENT;
+        this.state = switch (winner) {
+            case PLAYER -> currentState.incrementPlayerScore();
+            case OPPONENT -> currentState.incrementOpponentScore();
+        };
 
-        return new RoundResult(selectedAnimal, opponentAnimal, category, winner, playerStatValue, opponentStatValue);
-    }
-
-    private void updateStateAfterRound(boolean switchToPlayerTurn) {
-        if (playerScore.hasWon() || opponentScore.hasWon()) {
-            state = BattleProgressState.FINISHED;
-        } else {
-            playerTurn = switchToPlayerTurn;
-        }
-        clearOpponentSelectedCategory();
+        turnManager.switchTurn();
+        return new RoundResult(selectedAnimal, opponentAnimal, winner, category, statValuePlayer, statValueOpponent);
     }
 
     public StatCategory getOpponentSelectedCategory() throws BattleNotInProgressException, NotPlayersTurnException {
-        if (state != BattleProgressState.IN_PROGRESS) throw new BattleNotInProgressException();
-        if (playerTurn) throw new NotPlayersTurnException("It is the player's turn, not the opponent's");
-        return getOpponentSelectedCategoryInternal();
-    }
-
-    private StatCategory getOpponentSelectedCategoryInternal() {
-        if (opponentSelectedCategory == null) {
-            // Generate category on first access during opponent's turn
-            StatCategory[] categories = StatCategory.values();
-            opponentSelectedCategory = categories[random.nextInt(categories.length)];
-        }
-        return opponentSelectedCategory;
+        if (!(state instanceof BattleState.InProgress)) throw new BattleNotInProgressException();
+        if (turnManager.isPlayerTurn())
+            throw new NotPlayersTurnException("It is the player's turn, not the opponent's");
+        return opponentStrategy.selectCategory();
     }
 
     public boolean isFinished() {
-        return state == BattleProgressState.FINISHED;
+        return state instanceof BattleState.Finished;
     }
 
     public RoundWinner getWinner() {
-        if (!isFinished()) return null;
-        return playerScore.hasWon() ? RoundWinner.PLAYER : RoundWinner.OPPONENT;
-    }
-
-    public boolean canFlee() {
-        return playerTurn && opponentAnimal.isPrey() && state == BattleProgressState.IN_PROGRESS;
+        if (!(state instanceof BattleState.Finished finished))
+            throw new IllegalStateException("Battle is not finished yet");
+        return finished.winner();
     }
 
     public Animal getOpponentAnimal() {
         return opponentAnimal;
     }
 
-    /**
-     * Returns an unmodifiable list of animals available for the player to use in battle.
-     *
-     * @return unmodifiable list of available animals
-     */
     public List<Animal> getAvailableAnimals() {
         return Collections.unmodifiableList(playerBattleInventory.getAvailableAnimals());
     }
 
-    /**
-     * Returns an unmodifiable list of all animals in the battle inventory.
-     *
-     * @return unmodifiable list of all battle animals
-     */
     public List<Animal> getAllBattleAnimals() {
-        return Collections.unmodifiableList(playerBattleInventory.getAllAnimals());
+        return playerBattleInventory.getAllAnimals();
     }
 
     public int getPlayerScore() {
-        return playerScore.getValue();
+        return switch (state) {
+            case BattleState.NotStarted() -> 0;
+            case BattleState.InProgress(var ps, var os) -> ps.getValue();
+            case BattleState.Finished(var ps, var os, var w) -> ps.getValue();
+        };
     }
 
     public int getOpponentScore() {
-        return opponentScore.getValue();
+        return switch (state) {
+            case BattleState.NotStarted() -> 0;
+            case BattleState.InProgress(var ps, var os) -> os.getValue();
+            case BattleState.Finished(var ps, var os, var w) -> os.getValue();
+        };
     }
 
-    public BattleProgressState getState() {
+    public BattleState getState() {
         return state;
     }
 
     public boolean isPlayerTurn() {
-        return playerTurn;
+        return turnManager.isPlayerTurn();
     }
 
     @Override
     public String toString() {
-        return "Battle{" + "opponent=" + opponentAnimal + ", score=" + playerScore + "-" + opponentScore + ", state=" + state + '}';
+        return "Battle{" + "opponent=" + opponentAnimal + ", score=" + getPlayerScore() + "-" + getOpponentScore() + ", state=" + state + '}';
     }
 }

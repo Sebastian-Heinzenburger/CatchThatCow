@@ -5,7 +5,7 @@ import de.heinzenburger.shared.StatCategory;
 
 import java.util.Objects;
 
-public record RoundResult(Animal playerAnimal, Animal opponentAnimal, StatCategory category, RoundWinner winner,
+public record RoundResult(Animal playerAnimal, Animal opponentAnimal, RoundWinner winner, StatCategory category,
                           int playerStatValue, int opponentStatValue) {
 
     public RoundResult {

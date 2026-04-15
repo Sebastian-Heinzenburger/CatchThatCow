@@ -27,11 +27,6 @@ public class EncounterPendingState implements SessionState {
     }
 
     @Override
-    public boolean canMove() {
-        return false;
-    }
-
-    @Override
     public boolean canStartBattle() {
         return true;
     }
@@ -44,11 +39,6 @@ public class EncounterPendingState implements SessionState {
     @Override
     public Optional<Animal> getEncounteredAnimal() {
         return Optional.of(encounteredAnimal);
-    }
-
-    @Override
-    public SessionState transitionToEncounter(Animal animal) {
-        throw new IllegalStateException("Already in encounter pending state");
     }
 
     @Override

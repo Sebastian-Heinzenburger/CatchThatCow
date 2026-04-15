@@ -2,7 +2,7 @@ package de.heinzenburger.usecase;
 
 import de.heinzenburger.animal.Animal;
 import de.heinzenburger.battle.Battle;
-import de.heinzenburger.battle.BattleProgressState;
+import de.heinzenburger.battle.BattleState;
 import de.heinzenburger.exception.GameNotStartedException;
 import de.heinzenburger.exception.InvalidGamePhaseException;
 import de.heinzenburger.player.Player;
@@ -43,7 +43,7 @@ class StartBattleUseCaseTest {
         Battle battle = useCase.execute();
 
         assertNotNull(battle);
-        assertEquals(BattleProgressState.IN_PROGRESS, battle.getState());
+        assertInstanceOf(BattleState.InProgress.class, battle.getState());
     }
 
     @Test
