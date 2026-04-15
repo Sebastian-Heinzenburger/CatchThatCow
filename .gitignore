@@ -2,8 +2,8 @@
 # Maven build output (all modules)
 target/
 
-.claude
-README.md
+.gitignore
+*.md
 
 # Maven release/plugin backups
 pom.xml.versionsBackup
@@ -21,6 +21,7 @@ replay_pid*
 *.iml
 *.ipr
 *.iws
+*.cl*
 
 # Eclipse
 .classpath
