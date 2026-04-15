@@ -1,2 +1,0 @@
-- **BiomLevel**: Jedes Biom hat ein Level, das sich aus der Entfernung zum Spawnpunkt ergibt.
-- **AnimalLevel**: Jede Tierart ist einem bestimmten Level zugeordnet. Eisbären sind krasser als Schneehasen. In Eisbiomen nahe am Spwawn findet man Schneehasen, in weiter entfernten Biomen Eisbären.

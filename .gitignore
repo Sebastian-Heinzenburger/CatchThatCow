@@ -2,6 +2,9 @@
 # Maven build output (all modules)
 target/
 
+.claude
+README.md
+
 # Maven release/plugin backups
 pom.xml.versionsBackup
 release.properties
