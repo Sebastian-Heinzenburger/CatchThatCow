@@ -2,15 +2,61 @@ package de.heinzenburger.player;
 
 import de.heinzenburger.animal.Animal;
 import de.heinzenburger.animal.AnimalSpecies;
+import de.heinzenburger.player.exception.InsufficientAnimalsException;
 import de.heinzenburger.shared.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
+
+    @Test
+    void shouldCreatePlayerWithGeneratedId() {
+        Position startPos = new Position(5, 5);
+        Inventory inventory = new Inventory(new RandomTestAdapter());
+        Player player = new Player(inventory, startPos);
+
+        assertNotNull(player.getId());
+    }
+
+    @Test
+    void shouldCreatePlayerWithSpecificId() {
+        Position startPos = new Position(5, 5);
+        Inventory inventory = new Inventory(new RandomTestAdapter());
+        PlayerId id = new PlayerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
+
+        Player player = new Player(id, inventory, startPos);
+
+        assertEquals(id, player.getId());
+    }
+
+    @Test
+    void shouldBeEqualWhenSameId() {
+        PlayerId id = new PlayerId();
+        Inventory inventory1 = new Inventory(new RandomTestAdapter());
+        Inventory inventory2 = new Inventory(new RandomTestAdapter());
+
+        Player player1 = new Player(id, inventory1, new Position(0, 0));
+        Player player2 = new Player(id, inventory2, new Position(5, 5));
+
+        assertEquals(player1, player2);
+        assertEquals(player1.hashCode(), player2.hashCode());
+    }
+
+    @Test
+    void shouldNotBeEqualWhenDifferentId() {
+        Inventory inventory = new Inventory(new RandomTestAdapter());
+        Position pos = new Position(0, 0);
+
+        Player player1 = new Player(inventory, pos);
+        Player player2 = new Player(inventory, pos);
+
+        assertNotEquals(player1, player2);
+    }
 
     @Test
     void shouldCreatePlayerAtStartPosition() {
@@ -35,7 +81,7 @@ class PlayerTest {
     }
 
     @Test
-    void shouldRemoveRandomAnimalFromInventory() {
+    void shouldRemoveRandomAnimalFromInventory() throws InsufficientAnimalsException {
         Player player = createTestPlayer();
         Animal animal1 = createTestAnimal();
         Animal animal2 = createTestAnimal();

@@ -1,14 +1,21 @@
 package de.heinzenburger.battle;
 
 import de.heinzenburger.animal.Animal;
+import de.heinzenburger.battle.exception.AnimalNotAvailableException;
+import de.heinzenburger.battle.exception.BattleAlreadyStartedException;
+import de.heinzenburger.battle.exception.BattleNotInProgressException;
+import de.heinzenburger.battle.exception.NotPlayersTurnException;
 import de.heinzenburger.shared.RandomNumberGenerator;
 import de.heinzenburger.shared.StatCategory;
+
+import java.util.Collections;
+import java.util.List;
 
 public class Battle {
     private final Animal opponentAnimal;
     private final BattleInventory playerBattleInventory;
-    private int playerScore;
-    private int opponentScore;
+    private Score playerScore;
+    private Score opponentScore;
     private BattleState state;
     private boolean playerTurn;
     private final RandomNumberGenerator random;
@@ -29,24 +36,25 @@ public class Battle {
         this.playerBattleInventory = playerBattleInventory;
         this.playerTurn = opponentAnimal.isPrey();
         this.random = random;
-        this.playerScore = 0;
-        this.opponentScore = 0;
+        this.playerScore = new Score();
+        this.opponentScore = new Score();
         this.state = BattleState.NOT_STARTED;
     }
 
-    public void startBattle() {
+    public void startBattle() throws BattleAlreadyStartedException {
         if (state != BattleState.NOT_STARTED) {
-            throw new IllegalStateException("Battle has already been started");
+            throw new BattleAlreadyStartedException();
         }
         this.state = BattleState.IN_PROGRESS;
     }
 
-    public RoundResult playerAttack(Animal selectedAnimal, StatCategory category) {
+    public RoundResult playerAttack(Animal selectedAnimal, StatCategory category)
+            throws BattleNotInProgressException, NotPlayersTurnException, AnimalNotAvailableException {
         if (state != BattleState.IN_PROGRESS) {
-            throw new IllegalStateException("Battle is not in progress");
+            throw new BattleNotInProgressException();
         }
         if (!playerTurn) {
-            throw new IllegalStateException("It is not the player's turn");
+            throw new NotPlayersTurnException();
         }
         if (selectedAnimal == null) {
             throw new IllegalArgumentException("Selected animal cannot be null");
@@ -55,7 +63,7 @@ public class Battle {
             throw new IllegalArgumentException("Category cannot be null");
         }
         if (!playerBattleInventory.getAvailableAnimals().contains(selectedAnimal)) {
-            throw new IllegalArgumentException("Selected animal is not available for battle");
+            throw new AnimalNotAvailableException(selectedAnimal);
         }
 
         playerBattleInventory.use(selectedAnimal);
@@ -66,16 +74,16 @@ public class Battle {
         RoundWinner winner;
         if (playerStatValue > opponentStatValue) {
             winner = RoundWinner.PLAYER;
-            playerScore++;
+            playerScore = playerScore.increment();
         } else {
             winner = RoundWinner.OPPONENT;
-            opponentScore++;
+            opponentScore = opponentScore.increment();
         }
 
         RoundResult result = new RoundResult(selectedAnimal, opponentAnimal, category,
                 winner, playerStatValue, opponentStatValue);
 
-        if (playerScore >= 3 || opponentScore >= 3) {
+        if (playerScore.hasWon() || opponentScore.hasWon()) {
             state = BattleState.FINISHED;
         } else {
             playerTurn = false;
@@ -85,25 +93,26 @@ public class Battle {
         return result;
     }
 
-    public RoundResult opponentAttack(Animal selectedAnimal) {
+    public RoundResult opponentAttack(Animal selectedAnimal)
+            throws BattleNotInProgressException, NotPlayersTurnException, AnimalNotAvailableException {
         if (state != BattleState.IN_PROGRESS) {
-            throw new IllegalStateException("Battle is not in progress");
+            throw new BattleNotInProgressException();
         }
         if (playerTurn) {
-            throw new IllegalStateException("It is not the opponent's turn");
+            throw new NotPlayersTurnException("It is not the opponent's turn");
         }
         if (selectedAnimal == null) {
             throw new IllegalArgumentException("Selected animal cannot be null");
         }
         if (!playerBattleInventory.getAvailableAnimals().contains(selectedAnimal)) {
-            throw new IllegalArgumentException("Selected animal is not available for battle");
+            throw new AnimalNotAvailableException(selectedAnimal);
         }
         if (!playerBattleInventory.hasAvailableAnimals()) {
-            throw new IllegalStateException("Player has no available animals for opponent attack");
+            throw new AnimalNotAvailableException();
         }
 
         // Use the category that was selected (and shown to player)
-        StatCategory category = getOpponentSelectedCategory();
+        StatCategory category = getOpponentSelectedCategoryInternal();
 
         // Player has chosen the animal to defend with
         playerBattleInventory.use(selectedAnimal);
@@ -114,16 +123,16 @@ public class Battle {
         RoundWinner winner;
         if (playerStatValue > opponentStatValue) {
             winner = RoundWinner.PLAYER;
-            playerScore++;
+            playerScore = playerScore.increment();
         } else {
             winner = RoundWinner.OPPONENT;
-            opponentScore++;
+            opponentScore = opponentScore.increment();
         }
 
         RoundResult result = new RoundResult(selectedAnimal, opponentAnimal, category,
                 winner, playerStatValue, opponentStatValue);
 
-        if (playerScore >= 3 || opponentScore >= 3) {
+        if (playerScore.hasWon() || opponentScore.hasWon()) {
             state = BattleState.FINISHED;
         } else {
             playerTurn = true;
@@ -135,16 +144,20 @@ public class Battle {
         return result;
     }
 
-    public StatCategory getOpponentSelectedCategory() {
+    public StatCategory getOpponentSelectedCategory()
+            throws BattleNotInProgressException, NotPlayersTurnException {
         if (state != BattleState.IN_PROGRESS) {
-            throw new IllegalStateException("Battle is not in progress");
+            throw new BattleNotInProgressException();
         }
         if (playerTurn) {
-            throw new IllegalStateException("It is the player's turn, not the opponent's");
+            throw new NotPlayersTurnException("It is the player's turn, not the opponent's");
         }
+        return getOpponentSelectedCategoryInternal();
+    }
+
+    private StatCategory getOpponentSelectedCategoryInternal() {
         if (opponentSelectedCategory == null) {
             // Generate category on first access during opponent's turn
-            // TODO: shouldnt this change every opponent turn?
             StatCategory[] categories = StatCategory.values();
             opponentSelectedCategory = categories[random.nextInt(categories.length)];
         }
@@ -159,7 +172,7 @@ public class Battle {
         if (!isFinished()) {
             return null;
         }
-        return playerScore >= 3 ? RoundWinner.PLAYER : RoundWinner.OPPONENT;
+        return playerScore.hasWon() ? RoundWinner.PLAYER : RoundWinner.OPPONENT;
     }
 
     public boolean canFlee() {
@@ -170,16 +183,37 @@ public class Battle {
         return opponentAnimal;
     }
 
+    /**
+     * Returns an unmodifiable list of animals available for the player to use in battle.
+     * @return unmodifiable list of available animals
+     */
+    public List<Animal> getAvailableAnimals() {
+        return Collections.unmodifiableList(playerBattleInventory.getAvailableAnimals());
+    }
+
+    /**
+     * Returns an unmodifiable list of all animals in the battle inventory.
+     * @return unmodifiable list of all battle animals
+     */
+    public List<Animal> getAllBattleAnimals() {
+        return Collections.unmodifiableList(playerBattleInventory.getAllAnimals());
+    }
+
+    /**
+     * @deprecated Use {@link #getAvailableAnimals()} or {@link #getAllBattleAnimals()} instead.
+     * This method exposes internal state and will be removed in a future version.
+     */
+    @Deprecated
     public BattleInventory getPlayerBattleInventory() {
         return playerBattleInventory;
     }
 
     public int getPlayerScore() {
-        return playerScore;
+        return playerScore.getValue();
     }
 
     public int getOpponentScore() {
-        return opponentScore;
+        return opponentScore.getValue();
     }
 
     public BattleState getState() {

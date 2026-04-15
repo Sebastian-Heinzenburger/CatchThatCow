@@ -4,6 +4,7 @@ import de.heinzenburger.animal.Animal;
 import de.heinzenburger.battle.Battle;
 import de.heinzenburger.battle.BattleInventory;
 import de.heinzenburger.player.Player;
+import de.heinzenburger.player.exception.InsufficientAnimalsException;
 import de.heinzenburger.shared.RandomNumberGenerator;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class BattleFactory {
         this.random = random;
     }
 
-    public Battle createBattle(Player player, Animal opponent) {
+    public Battle createBattle(Player player, Animal opponent) throws InsufficientAnimalsException {
         if (player == null) {
             throw new IllegalArgumentException("Player cannot be null");
         }
@@ -30,10 +31,6 @@ public class BattleFactory {
         // Select 3 random animals from player's inventory for the battle
         List<Animal> selectedAnimals = player.getInventory()
                 .selectRandomForBattle(BATTLE_INVENTORY_SIZE);
-
-        if (selectedAnimals.isEmpty()) {
-            throw new IllegalStateException("Player has no animals to battle with");
-        }
 
         BattleInventory battleInventory = new BattleInventory(selectedAnimals);
 

@@ -2,6 +2,10 @@ package de.heinzenburger.battle;
 
 import de.heinzenburger.animal.Animal;
 import de.heinzenburger.animal.AnimalSpecies;
+import de.heinzenburger.battle.exception.AnimalNotAvailableException;
+import de.heinzenburger.battle.exception.BattleAlreadyStartedException;
+import de.heinzenburger.battle.exception.BattleNotInProgressException;
+import de.heinzenburger.battle.exception.NotPlayersTurnException;
 import de.heinzenburger.shared.*;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +45,7 @@ class BattleTest {
     }
 
     @Test
-    void shouldStartBattle() {
+    void shouldStartBattle() throws BattleAlreadyStartedException {
         Battle battle = createTestBattle();
         battle.startBattle();
 
@@ -49,15 +53,15 @@ class BattleTest {
     }
 
     @Test
-    void shouldNotStartBattleTwice() {
+    void shouldNotStartBattleTwice() throws BattleAlreadyStartedException {
         Battle battle = createTestBattle();
         battle.startBattle();
 
-        assertThrows(IllegalStateException.class, battle::startBattle);
+        assertThrows(BattleAlreadyStartedException.class, battle::startBattle);
     }
 
     @Test
-    void shouldExecutePlayerAttackAndIncreasePlayerScore() {
+    void shouldExecutePlayerAttackAndIncreasePlayerScore() throws Exception {
         Animal opponent = createPreyWithStats(50, 50, 50, 50, 50);
         List<Animal> playerAnimals = List.of(createAnimalWithStats(100, 100, 100, 100, 100));
         BattleInventory battleInventory = new BattleInventory(playerAnimals);
@@ -74,7 +78,7 @@ class BattleTest {
     }
 
     @Test
-    void shouldExecutePlayerAttackAndIncreaseOpponentScore() {
+    void shouldExecutePlayerAttackAndIncreaseOpponentScore() throws Exception {
         Animal opponent = createPreyWithStats(100, 100, 100, 100, 100);
         List<Animal> playerAnimals = List.of(createAnimalWithStats(50, 50, 50, 50, 50));
         BattleInventory battleInventory = new BattleInventory(playerAnimals);
@@ -90,7 +94,7 @@ class BattleTest {
     }
 
     @Test
-    void shouldNotAllowPlayerAttackWhenNotPlayerTurn() {
+    void shouldNotAllowPlayerAttackWhenNotPlayerTurn() throws BattleAlreadyStartedException {
         Battle battle = createTestBattle();
         battle.startBattle();
 
@@ -100,11 +104,11 @@ class BattleTest {
         assertFalse(opponentTurnBattle.isPlayerTurn());
 
         List<Animal> animals = createPlayerAnimals(1);
-        assertThrows(IllegalStateException.class, () -> opponentTurnBattle.playerAttack(animals.get(0), StatCategory.SPEED));
+        assertThrows(NotPlayersTurnException.class, () -> opponentTurnBattle.playerAttack(animals.get(0), StatCategory.SPEED));
     }
 
     @Test
-    void shouldExecuteOpponentAttack() {
+    void shouldExecuteOpponentAttack() throws Exception {
         Animal opponent = createPredatorWithStats(100, 100, 100, 100, 100);
         List<Animal> playerAnimals = createPlayerAnimals(3);
         BattleInventory battleInventory = new BattleInventory(playerAnimals);
@@ -116,8 +120,8 @@ class BattleTest {
         StatCategory category = battle.getOpponentSelectedCategory();
         assertNotNull(category);
 
-        // Player selects an animal to defend with
-        Animal selectedAnimal = battleInventory.getAvailableAnimals().get(0);
+        // Player selects an animal to defend with (using new delegate method)
+        Animal selectedAnimal = battle.getAvailableAnimals().get(0);
         RoundResult result = battle.opponentAttack(selectedAnimal);
 
         assertNotNull(result);
@@ -128,7 +132,7 @@ class BattleTest {
     }
 
     @Test
-    void shouldFinishBattleWhenPlayerReaches3Points() {
+    void shouldFinishBattleWhenPlayerReaches3Points() throws Exception {
         Animal opponent = createPredatorWithStats(50, 50, 50, 50, 50);
         List<Animal> playerAnimals = List.of(createAnimalWithStats(100, 100, 100, 100, 100), createAnimalWithStats(100, 100, 100, 100, 100), createAnimalWithStats(100, 100, 100, 100, 100), createAnimalWithStats(100, 100, 100, 100, 100), createAnimalWithStats(100, 100, 100, 100, 100));
         BattleInventory battleInventory = new BattleInventory(playerAnimals);
@@ -136,26 +140,25 @@ class BattleTest {
         Battle battle = new Battle(opponent, battleInventory, new RandomTestAdapter(42));
         battle.startBattle();
 
-        // Play rounds until battle finishes
+        // Play rounds until battle finishes (using new delegate method)
         int maxRounds = 3;
         int rounds = 0;
         while (!battle.isFinished() && rounds < maxRounds) {
             if (battle.isPlayerTurn()) {
-                battle.playerAttack(battleInventory.getAvailableAnimals().get(0), StatCategory.SPEED);
+                battle.playerAttack(battle.getAvailableAnimals().get(0), StatCategory.SPEED);
             } else {
-                Animal selectedAnimal = battleInventory.getAvailableAnimals().get(0);
+                Animal selectedAnimal = battle.getAvailableAnimals().get(0);
                 battle.opponentAttack(selectedAnimal);
             }
             rounds++;
         }
 
         assertTrue(battle.isFinished());
-        // Either player or opponent reached 3 points
         assertTrue(battle.getPlayerScore() == 3 || battle.getOpponentScore() == 3);
     }
 
     @Test
-    void shouldAllowFleeOnlyWithPreyAndPlayerTurn() {
+    void shouldAllowFleeOnlyWithPreyAndPlayerTurn() throws BattleAlreadyStartedException {
         Animal prey = createPrey();
         BattleInventory battleInventory = new BattleInventory(createPlayerAnimals(3));
 
@@ -166,7 +169,7 @@ class BattleTest {
     }
 
     @Test
-    void shouldNotAllowFleeWithPredator() {
+    void shouldNotAllowFleeWithPredator() throws BattleAlreadyStartedException {
         Animal predator = createPredator();
         BattleInventory battleInventory = new BattleInventory(createPlayerAnimals(3));
 
@@ -177,7 +180,7 @@ class BattleTest {
     }
 
     @Test
-    void shouldGetOpponentSelectedCategory() {
+    void shouldGetOpponentSelectedCategory() throws Exception {
         Animal opponent = createPredatorWithStats(100, 100, 100, 100, 100);
         List<Animal> playerAnimals = createPlayerAnimals(3);
         BattleInventory battleInventory = new BattleInventory(playerAnimals);
@@ -194,7 +197,7 @@ class BattleTest {
     }
 
     @Test
-    void shouldNotGetOpponentSelectedCategoryWhenPlayerTurn() {
+    void shouldNotGetOpponentSelectedCategoryWhenPlayerTurn() throws BattleAlreadyStartedException {
         Animal opponent = createPrey();
         List<Animal> playerAnimals = createPlayerAnimals(3);
         BattleInventory battleInventory = new BattleInventory(playerAnimals);
@@ -202,11 +205,11 @@ class BattleTest {
         Battle battle = new Battle(opponent, battleInventory, new RandomTestAdapter());
         battle.startBattle();
 
-        assertThrows(IllegalStateException.class, battle::getOpponentSelectedCategory);
+        assertThrows(NotPlayersTurnException.class, battle::getOpponentSelectedCategory);
     }
 
     @Test
-    void shouldClearOpponentSelectedCategoryAfterRound() {
+    void shouldClearOpponentSelectedCategoryAfterRound() throws Exception {
         Animal opponent = createPredatorWithStats(100, 100, 100, 100, 100);
         List<Animal> playerAnimals = createPlayerAnimals(5);
         BattleInventory battleInventory = new BattleInventory(playerAnimals);
@@ -214,14 +217,14 @@ class BattleTest {
         Battle battle = new Battle(opponent, battleInventory, new RandomTestAdapter(42));
         battle.startBattle();
 
-        // First opponent attack
+        // First opponent attack (using delegate method)
         StatCategory category1 = battle.getOpponentSelectedCategory();
-        Animal selectedAnimal1 = battleInventory.getAvailableAnimals().get(0);
+        Animal selectedAnimal1 = battle.getAvailableAnimals().get(0);
         battle.opponentAttack(selectedAnimal1);
         assertEquals(StatCategory.SPEED, category1); // Based on the RandomTestAdapter with seed 42, the first category should be SPEED
 
-        // Player attacks
-        Animal selectedAnimal2 = battleInventory.getAvailableAnimals().get(0);
+        // Player attacks (using delegate method)
+        Animal selectedAnimal2 = battle.getAvailableAnimals().get(0);
         battle.playerAttack(selectedAnimal2, StatCategory.SPEED);
 
         // Second opponent attack - should have a potentially different category
@@ -231,7 +234,35 @@ class BattleTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenOpponentAttackWithInvalidAnimal() {
+    void shouldReturnAvailableAnimals() {
+        Animal opponent = createPrey();
+        List<Animal> playerAnimals = createPlayerAnimals(3);
+        BattleInventory battleInventory = new BattleInventory(playerAnimals);
+
+        Battle battle = new Battle(opponent, battleInventory, new RandomTestAdapter());
+
+        List<Animal> availableAnimals = battle.getAvailableAnimals();
+        assertEquals(3, availableAnimals.size());
+        // Verify it's unmodifiable
+        assertThrows(UnsupportedOperationException.class, () -> availableAnimals.add(createPrey()));
+    }
+
+    @Test
+    void shouldReturnAllBattleAnimals() {
+        Animal opponent = createPrey();
+        List<Animal> playerAnimals = createPlayerAnimals(3);
+        BattleInventory battleInventory = new BattleInventory(playerAnimals);
+
+        Battle battle = new Battle(opponent, battleInventory, new RandomTestAdapter());
+
+        List<Animal> allAnimals = battle.getAllBattleAnimals();
+        assertEquals(3, allAnimals.size());
+        // Verify it's unmodifiable
+        assertThrows(UnsupportedOperationException.class, () -> allAnimals.add(createPrey()));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenOpponentAttackWithInvalidAnimal() throws BattleAlreadyStartedException {
         Animal opponent = createPredatorWithStats(100, 100, 100, 100, 100);
         List<Animal> playerAnimals = createPlayerAnimals(3);
         BattleInventory battleInventory = new BattleInventory(playerAnimals);
@@ -242,11 +273,11 @@ class BattleTest {
         // Try to use an animal that's not in the battle inventory
         Animal invalidAnimal = createAnimalWithStats(50, 50, 50, 50, 50);
 
-        assertThrows(IllegalArgumentException.class, () -> battle.opponentAttack(invalidAnimal));
+        assertThrows(AnimalNotAvailableException.class, () -> battle.opponentAttack(invalidAnimal));
     }
 
     @Test
-    void shouldThrowExceptionWhenOpponentAttackWithNullAnimal() {
+    void shouldThrowExceptionWhenOpponentAttackWithNullAnimal() throws BattleAlreadyStartedException {
         Animal opponent = createPredatorWithStats(100, 100, 100, 100, 100);
         List<Animal> playerAnimals = createPlayerAnimals(3);
         BattleInventory battleInventory = new BattleInventory(playerAnimals);

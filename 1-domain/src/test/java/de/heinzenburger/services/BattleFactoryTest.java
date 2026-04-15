@@ -5,6 +5,7 @@ import de.heinzenburger.animal.AnimalSpecies;
 import de.heinzenburger.battle.Battle;
 import de.heinzenburger.player.Inventory;
 import de.heinzenburger.player.Player;
+import de.heinzenburger.player.exception.InsufficientAnimalsException;
 import de.heinzenburger.shared.*;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BattleFactoryTest {
 
     @Test
-    void shouldCreateBattleWithPredator() {
+    void shouldCreateBattleWithPredator() throws InsufficientAnimalsException {
         BattleFactory factory = new BattleFactory(new RandomTestAdapter(42));
         Player player = createPlayerWithAnimals(5);
         Animal predator = createPredator();
@@ -26,11 +27,11 @@ class BattleFactoryTest {
         assertNotNull(battle);
         assertEquals(predator, battle.getOpponentAnimal());
         assertFalse(battle.isPlayerTurn()); // Predator attacks first
-        assertEquals(3, battle.getPlayerBattleInventory().getAllAnimals().size());
+        assertEquals(3, battle.getAllBattleAnimals().size());
     }
 
     @Test
-    void shouldCreateBattleWithPrey() {
+    void shouldCreateBattleWithPrey() throws InsufficientAnimalsException {
         BattleFactory factory = new BattleFactory(new RandomTestAdapter(42));
         Player player = createPlayerWithAnimals(5);
         Animal prey = createPrey();
@@ -43,25 +44,25 @@ class BattleFactoryTest {
     }
 
     @Test
-    void shouldSelectThreeRandomAnimals() {
+    void shouldSelectThreeRandomAnimals() throws InsufficientAnimalsException {
         BattleFactory factory = new BattleFactory(new RandomTestAdapter(42));
         Player player = createPlayerWithAnimals(5);
         Animal opponent = createPrey();
 
         Battle battle = factory.createBattle(player, opponent);
 
-        assertEquals(3, battle.getPlayerBattleInventory().getAllAnimals().size());
+        assertEquals(3, battle.getAllBattleAnimals().size());
     }
 
     @Test
-    void shouldSelectAllAnimalsWhenPlayerHasLessThanThree() {
+    void shouldSelectAllAnimalsWhenPlayerHasLessThanThree() throws InsufficientAnimalsException {
         BattleFactory factory = new BattleFactory(new RandomTestAdapter(42));
         Player player = createPlayerWithAnimals(2);
         Animal opponent = createPrey();
 
         Battle battle = factory.createBattle(player, opponent);
 
-        assertEquals(2, battle.getPlayerBattleInventory().getAllAnimals().size());
+        assertEquals(2, battle.getAllBattleAnimals().size());
     }
 
     @Test
@@ -71,7 +72,7 @@ class BattleFactoryTest {
         Player player = new Player(emptyInventory, new Position(0, 0));
         Animal opponent = createPrey();
 
-        assertThrows(IllegalStateException.class, () -> factory.createBattle(player, opponent));
+        assertThrows(InsufficientAnimalsException.class, () -> factory.createBattle(player, opponent));
     }
 
     private Player createPlayerWithAnimals(int count) {

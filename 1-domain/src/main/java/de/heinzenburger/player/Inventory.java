@@ -1,6 +1,7 @@
 package de.heinzenburger.player;
 
 import de.heinzenburger.animal.Animal;
+import de.heinzenburger.player.exception.InsufficientAnimalsException;
 import de.heinzenburger.shared.RandomNumberGenerator;
 
 import java.util.ArrayList;
@@ -33,21 +34,22 @@ public class Inventory {
         animals.remove(animal);
     }
 
-    public Animal removeRandom() {
+    public Animal removeRandom() throws InsufficientAnimalsException {
         if (animals.isEmpty()) {
-            throw new IllegalStateException("Cannot remove from empty inventory");
+            throw new InsufficientAnimalsException(1, 0);
         }
         int index = random.nextInt(animals.size());
         return animals.remove(index);
     }
 
-    public List<Animal> selectRandomForBattle(int count) {
+    public List<Animal> selectRandomForBattle(int count) throws InsufficientAnimalsException {
         if (count < 0) {
             throw new IllegalArgumentException("Count cannot be negative");
         }
-        if (count > animals.size()) {
-            count = animals.size();
+        if (animals.isEmpty()) {
+            throw new InsufficientAnimalsException(count, 0);
         }
+        int selectCount = Math.min(count, animals.size());
 
         List<Animal> allAnimals = new ArrayList<>(animals);
         // Fisher-Yates shuffle algorithm
@@ -57,7 +59,7 @@ public class Inventory {
             allAnimals.set(i, allAnimals.get(j));
             allAnimals.set(j, temp);
         }
-        return new ArrayList<>(allAnimals.subList(0, count));
+        return new ArrayList<>(allAnimals.subList(0, selectCount));
     }
 
     public List<Animal> getAnimals() {

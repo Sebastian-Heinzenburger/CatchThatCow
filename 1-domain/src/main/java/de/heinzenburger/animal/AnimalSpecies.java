@@ -1,10 +1,6 @@
 package de.heinzenburger.animal;
 
-import de.heinzenburger.shared.AnimalStats;
-import de.heinzenburger.shared.AnimalType;
-import de.heinzenburger.shared.BiomeType;
-import de.heinzenburger.shared.RandomNumberGenerator;
-import de.heinzenburger.shared.StatCategory;
+import de.heinzenburger.shared.*;
 
 import java.util.EnumMap;
 import java.util.Map;

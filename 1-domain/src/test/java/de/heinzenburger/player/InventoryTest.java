@@ -2,6 +2,7 @@ package de.heinzenburger.player;
 
 import de.heinzenburger.animal.Animal;
 import de.heinzenburger.animal.AnimalSpecies;
+import de.heinzenburger.player.exception.InsufficientAnimalsException;
 import de.heinzenburger.shared.AnimalStats;
 import de.heinzenburger.shared.AnimalType;
 import de.heinzenburger.shared.BiomeType;
@@ -49,7 +50,7 @@ class InventoryTest {
     }
 
     @Test
-    void shouldRemoveRandomAnimal() {
+    void shouldRemoveRandomAnimal() throws InsufficientAnimalsException {
         Inventory inventory = new Inventory(new RandomTestAdapter(42));
         Animal animal1 = createTestAnimal();
         Animal animal2 = createTestAnimal();
@@ -70,11 +71,11 @@ class InventoryTest {
     @Test
     void shouldThrowExceptionWhenRemovingFromEmptyInventory() {
         Inventory inventory = new Inventory(new RandomTestAdapter());
-        assertThrows(IllegalStateException.class, inventory::removeRandom);
+        assertThrows(InsufficientAnimalsException.class, inventory::removeRandom);
     }
 
     @Test
-    void shouldSelectRandomAnimalsForBattle() {
+    void shouldSelectRandomAnimalsForBattle() throws InsufficientAnimalsException {
         Inventory inventory = new Inventory(new RandomTestAdapter(42));
         Animal animal1 = createTestAnimal();
         Animal animal2 = createTestAnimal();
@@ -96,7 +97,7 @@ class InventoryTest {
     }
 
     @Test
-    void shouldSelectAllAnimalsWhenCountExceedsSize() {
+    void shouldSelectAllAnimalsWhenCountExceedsSize() throws InsufficientAnimalsException {
         Inventory inventory = new Inventory(new RandomTestAdapter());
         Animal animal1 = createTestAnimal();
         Animal animal2 = createTestAnimal();
@@ -107,6 +108,13 @@ class InventoryTest {
         List<Animal> battleAnimals = inventory.selectRandomForBattle(5);
 
         assertEquals(2, battleAnimals.size());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenSelectingFromEmptyInventory() {
+        Inventory inventory = new Inventory(new RandomTestAdapter());
+
+        assertThrows(InsufficientAnimalsException.class, () -> inventory.selectRandomForBattle(3));
     }
 
     @Test
