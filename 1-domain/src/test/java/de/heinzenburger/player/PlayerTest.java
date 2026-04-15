@@ -89,7 +89,7 @@ class PlayerTest {
         player.addAnimal(animal1);
         player.addAnimal(animal2);
 
-        Animal removed = player.removeRandomAnimal();
+        Animal removed = player.loseRandomAnimal();
 
         assertNotNull(removed);
         assertEquals(1, player.getInventory().size());

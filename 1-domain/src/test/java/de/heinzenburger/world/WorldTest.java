@@ -1,6 +1,7 @@
 package de.heinzenburger.world;
 
 import de.heinzenburger.shared.BiomeType;
+import de.heinzenburger.shared.Direction;
 import de.heinzenburger.shared.Position;
 import org.junit.jupiter.api.Test;
 

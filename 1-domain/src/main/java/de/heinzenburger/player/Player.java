@@ -41,10 +41,11 @@ public class Player {
         inventory.add(animal);
     }
 
-    public Animal removeRandomAnimal() throws InsufficientAnimalsException {
+    public Animal loseRandomAnimal() throws InsufficientAnimalsException {
         return inventory.removeRandom();
     }
 
+    // TODO: make sure the new position is valid within the world using the Type System
     public void moveTo(Position newPosition) {
         if (newPosition == null) throw new IllegalArgumentException("New position cannot be null");
         this.currentPosition = newPosition;

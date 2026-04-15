@@ -25,23 +25,21 @@ public final class Position {
     }
 
     public List<Position> adjacentPositions() {
-        return List.of(northernNeighbour(), easternNeighbour(), southernNeighbour(), westernNeighbour());
+        return List.of(
+                neighbour(Direction.NORTH),
+                neighbour(Direction.EAST),
+                neighbour(Direction.SOUTH),
+                neighbour(Direction.WEST)
+        );
     }
 
-    public Position northernNeighbour() {
-        return new Position(x, y - 1);
-    }
-
-    public Position easternNeighbour() {
-        return new Position(x + 1, y);
-    }
-
-    public Position southernNeighbour() {
-        return new Position(x, y + 1);
-    }
-
-    public Position westernNeighbour() {
-        return new Position(x - 1, y);
+    public Position neighbour(Direction direction) {
+        return switch (direction) {
+            case NORTH -> new Position(x, y - 1);
+            case EAST -> new Position(x + 1, y);
+            case SOUTH -> new Position(x, y + 1);
+            case WEST -> new Position(x - 1, y);
+        };
     }
 
     @Override

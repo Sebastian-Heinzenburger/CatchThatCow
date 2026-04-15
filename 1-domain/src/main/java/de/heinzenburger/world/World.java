@@ -1,5 +1,6 @@
 package de.heinzenburger.world;
 
+import de.heinzenburger.shared.Direction;
 import de.heinzenburger.shared.Position;
 
 import java.util.Collections;
@@ -47,17 +48,10 @@ public class World {
 
     public Map<Direction, Biome> getAdjacentBiomes(Position position) {
         Map<Direction, Biome> adjacent = new EnumMap<>(Direction.class);
-
-        Position north = position.northernNeighbour();
-        Position east = position.easternNeighbour();
-        Position south = position.southernNeighbour();
-        Position west = position.westernNeighbour();
-
-        if (biomes.containsKey(north)) adjacent.put(Direction.NORTH, biomes.get(north));
-        if (biomes.containsKey(east)) adjacent.put(Direction.EAST, biomes.get(east));
-        if (biomes.containsKey(south)) adjacent.put(Direction.SOUTH, biomes.get(south));
-        if (biomes.containsKey(west)) adjacent.put(Direction.WEST, biomes.get(west));
-
+        for (Direction direction : Direction.values()) {
+            Position neighbour = position.neighbour(direction);
+            if (biomes.containsKey(neighbour)) adjacent.put(direction, biomes.get(neighbour));
+        }
         return adjacent;
     }
 
@@ -73,4 +67,5 @@ public class World {
     public String toString() {
         return "World{" + "size=" + size + ", biomes=" + biomes.size() + '}';
     }
+
 }
