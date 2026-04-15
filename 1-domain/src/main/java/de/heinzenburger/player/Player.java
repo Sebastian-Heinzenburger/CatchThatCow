@@ -3,6 +3,7 @@ package de.heinzenburger.player;
 import de.heinzenburger.animal.Animal;
 import de.heinzenburger.player.exception.InsufficientAnimalsException;
 import de.heinzenburger.shared.Position;
+import de.heinzenburger.shared.ValidPosition;
 
 import java.util.Objects;
 
@@ -45,10 +46,9 @@ public class Player {
         return inventory.removeRandom();
     }
 
-    // TODO: make sure the new position is valid within the world using the Type System
-    public void moveTo(Position newPosition) {
-        if (newPosition == null) throw new IllegalArgumentException("New position cannot be null");
-        this.currentPosition = newPosition;
+    public void moveTo(ValidPosition validPosition) {
+        if (validPosition == null) throw new IllegalArgumentException("Valid position cannot be null");
+        this.currentPosition = validPosition.getPosition();
     }
 
     @Override

@@ -4,6 +4,8 @@ import de.heinzenburger.animal.Animal;
 import de.heinzenburger.animal.AnimalSpecies;
 import de.heinzenburger.player.exception.InsufficientAnimalsException;
 import de.heinzenburger.shared.*;
+import de.heinzenburger.world.Biome;
+import de.heinzenburger.world.World;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;
@@ -97,21 +99,40 @@ class PlayerTest {
     }
 
     @Test
-    void shouldMoveToNewPosition() {
-        Position startPos = new Position(0, 0);
-        Position newPos = new Position(5, 5);
-        Inventory inventory = new Inventory(new RandomTestAdapter());
-        Player player = new Player(inventory, startPos);
-
-        player.moveTo(newPos);
-
-        assertEquals(newPos, player.getCurrentPosition());
-    }
-
-    @Test
     void shouldThrowExceptionWhenMovingToNullPosition() {
         Player player = createTestPlayer();
         assertThrows(IllegalArgumentException.class, () -> player.moveTo(null));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenMovingToNullValidPosition() {
+        Player player = createTestPlayer();
+        assertThrows(IllegalArgumentException.class, () -> player.moveTo((ValidPosition) null));
+    }
+
+    @Test
+    void shouldMoveToValidPosition() {
+        Position startPos = new Position(0, 0);
+        Inventory inventory = new Inventory(new RandomTestAdapter());
+        Player player = new Player(inventory, startPos);
+
+        World world = createTestWorld();
+        Position targetPos = new Position(1, 0);
+        ValidPosition validPos = ValidPosition.of(targetPos, world);
+
+        player.moveTo(validPos);
+
+        assertEquals(targetPos, player.getCurrentPosition());
+    }
+
+    private World createTestWorld() {
+        Position startPos = new Position(0, 0);
+        Map<Position, Biome> biomes = Map.of(
+                new Position(0, 0), new Biome(new Position(0, 0), BiomeType.GRASSLAND, 0),
+                new Position(1, 0), new Biome(new Position(1, 0), BiomeType.FOREST, 1),
+                new Position(0, 1), new Biome(new Position(0, 1), BiomeType.DESERT, 1)
+        );
+        return new World(3, startPos, biomes);
     }
 
     private Player createTestPlayer() {

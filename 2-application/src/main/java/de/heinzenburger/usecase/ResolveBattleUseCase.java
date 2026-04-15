@@ -68,7 +68,6 @@ public class ResolveBattleUseCase {
     }
 
     /**
-     * TODO: how does this relate to the unused BattleResult class?
      * The outcome of a resolved battle.
      */
     public record BattleOutcome(RoundWinner winner, de.heinzenburger.animal.Animal caughtAnimal,

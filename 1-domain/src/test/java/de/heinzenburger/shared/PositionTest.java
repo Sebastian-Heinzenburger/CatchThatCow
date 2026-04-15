@@ -12,8 +12,8 @@ class PositionTest {
     @Test
     void shouldCreatePosition() {
         Position position = new Position(3, 5);
-        assertEquals(3, position.getX());
-        assertEquals(5, position.getY());
+        assertEquals(3, position.x());
+        assertEquals(5, position.y());
     }
 
     @Test

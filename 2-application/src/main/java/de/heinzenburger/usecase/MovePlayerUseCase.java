@@ -9,6 +9,7 @@ import de.heinzenburger.session.GameSession;
 import de.heinzenburger.session.GameSessionManager;
 import de.heinzenburger.shared.Direction;
 import de.heinzenburger.shared.Position;
+import de.heinzenburger.shared.ValidPosition;
 import de.heinzenburger.world.World;
 
 /**
@@ -45,11 +46,16 @@ public class MovePlayerUseCase {
         // Calculate new position based on direction
         Position newPosition = currentPosition.neighbour(direction);
 
-        // Validate the new position exists in the world
-        if (!world.isValidPosition(newPosition)) throw new InvalidMoveException(currentPosition, direction);
+        // Validate the new position exists in the world using type-safe validation
+        ValidPosition validPosition;
+        try {
+            validPosition = ValidPosition.of(newPosition, world);
+        } catch (de.heinzenburger.shared.exception.InvalidPositionException e) {
+            throw new InvalidMoveException(currentPosition, direction);
+        }
 
         // Move player
-        player.moveTo(newPosition);
+        player.moveTo(validPosition);
 
         return newPosition;
     }

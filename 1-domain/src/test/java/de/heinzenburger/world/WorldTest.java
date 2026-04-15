@@ -35,7 +35,7 @@ class WorldTest {
         Biome biome = world.getBiomeAt(testPos);
 
         assertNotNull(biome);
-        assertEquals(testPos, biome.getPosition());
+        assertEquals(testPos, biome.position());
     }
 
     @Test

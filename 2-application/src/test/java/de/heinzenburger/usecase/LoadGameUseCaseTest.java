@@ -15,16 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class LoadGameUseCaseTest {
 
     private GameSessionManager sessionManager;
-    private RepositoryStubs.InMemoryPlayerRepository playerRepository;
-    private RepositoryStubs.InMemoryWorldRepository worldRepository;
+    private RepositoryStubs.InMemoryGameStateRepository gameStateRepository;
     private LoadGameUseCase useCase;
 
     @BeforeEach
     void setUp() {
         sessionManager = new GameSessionManager();
-        playerRepository = new RepositoryStubs.InMemoryPlayerRepository();
-        worldRepository = new RepositoryStubs.InMemoryWorldRepository();
-        useCase = new LoadGameUseCase(sessionManager, playerRepository, worldRepository);
+        gameStateRepository = new RepositoryStubs.InMemoryGameStateRepository();
+        useCase = new LoadGameUseCase(sessionManager, gameStateRepository);
     }
 
     @Test
@@ -32,8 +30,7 @@ class LoadGameUseCaseTest {
         World world = TestDataFactory.createTestWorld(2);
         Player player = TestDataFactory.createPlayerAtPosition(new Position(0, 0), 3);
 
-        playerRepository.save(player);
-        worldRepository.save(world);
+        gameStateRepository.save(player, world);
 
         GameSession session = useCase.execute();
 
@@ -45,8 +42,7 @@ class LoadGameUseCaseTest {
         World world = TestDataFactory.createTestWorld(2);
         Player player = TestDataFactory.createPlayerAtPosition(new Position(0, 0), 3);
 
-        playerRepository.save(player);
-        worldRepository.save(world);
+        gameStateRepository.save(player, world);
 
         GameSession session = useCase.execute();
 
@@ -58,8 +54,7 @@ class LoadGameUseCaseTest {
         World world = TestDataFactory.createTestWorld(2);
         Player player = TestDataFactory.createPlayerAtPosition(new Position(0, 0), 3);
 
-        playerRepository.save(player);
-        worldRepository.save(world);
+        gameStateRepository.save(player, world);
 
         GameSession session = useCase.execute();
 
@@ -79,8 +74,7 @@ class LoadGameUseCaseTest {
         // Save different game state
         World savedWorld = TestDataFactory.createTestWorld(3);
         Player savedPlayer = TestDataFactory.createPlayerAtPosition(new Position(1, 1), 5);
-        playerRepository.save(savedPlayer);
-        worldRepository.save(savedWorld);
+        gameStateRepository.save(savedPlayer, savedWorld);
 
         // Load should end existing session and create new one
         GameSession newSession = useCase.execute();
@@ -94,8 +88,7 @@ class LoadGameUseCaseTest {
         World world = TestDataFactory.createTestWorld(2);
         Player player = TestDataFactory.createPlayerAtPosition(new Position(0, 0), 3);
 
-        playerRepository.save(player);
-        worldRepository.save(world);
+        gameStateRepository.save(player, world);
 
         GameSession session = useCase.execute();
 
@@ -103,25 +96,7 @@ class LoadGameUseCaseTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenNoSavedPlayer() {
-        World world = TestDataFactory.createTestWorld(2);
-        worldRepository.save(world);
-
-        // No player saved
-        assertThrows(NoSavedGameException.class, () -> useCase.execute());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenNoSavedWorld() {
-        Player player = TestDataFactory.createPlayerAtPosition(new Position(0, 0), 3);
-        playerRepository.save(player);
-
-        // No world saved
-        assertThrows(NoSavedGameException.class, () -> useCase.execute());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenNeitherExists() {
+    void shouldThrowExceptionWhenNoSavedGame() {
         // Nothing saved
         assertThrows(NoSavedGameException.class, () -> useCase.execute());
     }

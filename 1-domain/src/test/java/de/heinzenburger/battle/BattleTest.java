@@ -70,7 +70,7 @@ class BattleTest {
 
         RoundResult result = battle.playerAttack(playerAnimals.get(0), StatCategory.SPEED);
 
-        assertEquals(RoundWinner.PLAYER, result.getWinner());
+        assertEquals(RoundWinner.PLAYER, result.winner());
         assertEquals(1, battle.getPlayerScore());
         assertEquals(0, battle.getOpponentScore());
         assertFalse(battle.isPlayerTurn()); // Turn switches to opponent
@@ -87,7 +87,7 @@ class BattleTest {
 
         RoundResult result = battle.playerAttack(playerAnimals.get(0), StatCategory.SPEED);
 
-        assertEquals(RoundWinner.OPPONENT, result.getWinner());
+        assertEquals(RoundWinner.OPPONENT, result.winner());
         assertEquals(0, battle.getPlayerScore());
         assertEquals(1, battle.getOpponentScore());
     }
@@ -124,9 +124,9 @@ class BattleTest {
         RoundResult result = battle.opponentAttack(selectedAnimal);
 
         assertNotNull(result);
-        assertEquals(selectedAnimal, result.getPlayerAnimal());
-        assertEquals(opponent, result.getOpponentAnimal());
-        assertEquals(category, result.getCategory());
+        assertEquals(selectedAnimal, result.playerAnimal());
+        assertEquals(opponent, result.opponentAnimal());
+        assertEquals(category, result.category());
         assertTrue(battle.isPlayerTurn()); // Turn switches to player
     }
 

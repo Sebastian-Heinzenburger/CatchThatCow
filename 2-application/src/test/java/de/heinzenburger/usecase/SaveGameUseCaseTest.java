@@ -15,16 +15,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class SaveGameUseCaseTest {
 
     private GameSessionManager sessionManager;
-    private RepositoryStubs.InMemoryPlayerRepository playerRepository;
-    private RepositoryStubs.InMemoryWorldRepository worldRepository;
+    private RepositoryStubs.InMemoryGameStateRepository gameStateRepository;
     private SaveGameUseCase useCase;
 
     @BeforeEach
     void setUp() {
         sessionManager = new GameSessionManager();
-        playerRepository = new RepositoryStubs.InMemoryPlayerRepository();
-        worldRepository = new RepositoryStubs.InMemoryWorldRepository();
-        useCase = new SaveGameUseCase(sessionManager, playerRepository, worldRepository);
+        gameStateRepository = new RepositoryStubs.InMemoryGameStateRepository();
+        useCase = new SaveGameUseCase(sessionManager, gameStateRepository);
     }
 
     @Test
@@ -35,8 +33,8 @@ class SaveGameUseCaseTest {
 
         useCase.execute();
 
-        assertTrue(playerRepository.load().isPresent());
-        assertEquals(player, playerRepository.load().get());
+        assertTrue(gameStateRepository.loadPlayer().isPresent());
+        assertEquals(player, gameStateRepository.loadPlayer().get());
     }
 
     @Test
@@ -47,8 +45,8 @@ class SaveGameUseCaseTest {
 
         useCase.execute();
 
-        assertTrue(worldRepository.load().isPresent());
-        assertEquals(world, worldRepository.load().get());
+        assertTrue(gameStateRepository.loadWorld().isPresent());
+        assertEquals(world, gameStateRepository.loadWorld().get());
     }
 
     @Test
@@ -61,8 +59,8 @@ class SaveGameUseCaseTest {
 
         useCase.execute();
 
-        assertTrue(playerRepository.load().isPresent());
-        assertTrue(worldRepository.load().isPresent());
+        assertTrue(gameStateRepository.loadPlayer().isPresent());
+        assertTrue(gameStateRepository.loadWorld().isPresent());
     }
 
     @Test
@@ -76,8 +74,8 @@ class SaveGameUseCaseTest {
 
         useCase.execute();
 
-        assertTrue(playerRepository.load().isPresent());
-        assertTrue(worldRepository.load().isPresent());
+        assertTrue(gameStateRepository.loadPlayer().isPresent());
+        assertTrue(gameStateRepository.loadWorld().isPresent());
     }
 
     @Test

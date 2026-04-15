@@ -1,14 +1,10 @@
 package de.heinzenburger.usecase;
 
 import de.heinzenburger.exception.ApplicationException;
-import de.heinzenburger.player.Player;
-import de.heinzenburger.player.PlayerRepository;
+import de.heinzenburger.game.GameState;
+import de.heinzenburger.game.GameStateRepository;
 import de.heinzenburger.session.GameSession;
 import de.heinzenburger.session.GameSessionManager;
-import de.heinzenburger.world.World;
-import de.heinzenburger.world.WorldRepository;
-
-import java.util.Optional;
 
 /**
  * Loads a previously saved game state.
@@ -16,13 +12,11 @@ import java.util.Optional;
 public class LoadGameUseCase {
 
     private final GameSessionManager sessionManager;
-    private final PlayerRepository playerRepository;
-    private final WorldRepository worldRepository;
+    private final GameStateRepository gameStateRepository;
 
-    public LoadGameUseCase(GameSessionManager sessionManager, PlayerRepository playerRepository, WorldRepository worldRepository) {
+    public LoadGameUseCase(GameSessionManager sessionManager, GameStateRepository gameStateRepository) {
         this.sessionManager = sessionManager;
-        this.playerRepository = playerRepository;
-        this.worldRepository = worldRepository;
+        this.gameStateRepository = gameStateRepository;
     }
 
     /**
@@ -32,16 +26,12 @@ public class LoadGameUseCase {
      * @throws NoSavedGameException if no saved game exists
      */
     public GameSession execute() throws NoSavedGameException {
-        // Load player and world
-        // TODO: Player and World should be loaded together in a single transaction to ensure consistency
-        Optional<Player> playerOpt = playerRepository.load();
-        Optional<World> worldOpt = worldRepository.load();
-
-        if (playerOpt.isEmpty() || worldOpt.isEmpty()) throw new NoSavedGameException();
+        // Load player and world atomically
+        GameState gameState = gameStateRepository.load().orElseThrow(NoSavedGameException::new);
 
         // End any existing session and start with loaded data
         sessionManager.endSession();
-        return sessionManager.startSession(playerOpt.get(), worldOpt.get());
+        return sessionManager.startSession(gameState.player(), gameState.world());
     }
 
     /**

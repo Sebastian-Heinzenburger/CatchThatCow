@@ -16,9 +16,9 @@ class BiomeTest {
         Position position = new Position(5, 5);
         Biome biome = new Biome(position, BiomeType.DESERT, 2);
 
-        assertEquals(position, biome.getPosition());
-        assertEquals(BiomeType.DESERT, biome.getType());
-        assertEquals(2, biome.getDistanceFromStart());
+        assertEquals(position, biome.position());
+        assertEquals(BiomeType.DESERT, biome.type());
+        assertEquals(2, biome.distanceFromStart());
     }
 
     @Test

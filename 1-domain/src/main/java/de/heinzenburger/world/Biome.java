@@ -6,31 +6,12 @@ import de.heinzenburger.shared.Position;
 
 import java.util.Objects;
 
-public class Biome {
-    private final Position position;
-    private final BiomeType type;
-    private final int distanceFromStart;
+public record Biome(Position position, BiomeType type, int distanceFromStart) {
 
-    public Biome(Position position, BiomeType type, int distanceFromStart) {
+    public Biome {
         if (position == null) throw new IllegalArgumentException("Position cannot be null");
         if (type == null) throw new IllegalArgumentException("Type cannot be null");
         if (distanceFromStart < 0) throw new IllegalArgumentException("Distance from start cannot be negative");
-
-        this.position = position;
-        this.type = type;
-        this.distanceFromStart = distanceFromStart;
-    }
-
-    public Position getPosition() {
-        return position;
-    }
-
-    public BiomeType getType() {
-        return type;
-    }
-
-    public int getDistanceFromStart() {
-        return distanceFromStart;
     }
 
     public int getAnimalLevel() {

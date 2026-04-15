@@ -71,9 +71,9 @@ class PlayerAttackUseCaseTest {
         Animal selectedAnimal = battle.getAvailableAnimals().get(0);
         RoundResult result = useCase.execute(selectedAnimal, StatCategory.SPEED);
 
-        assertNotNull(result.getWinner());
-        assertNotNull(result.getPlayerAnimal());
-        assertNotNull(result.getOpponentAnimal());
+        assertNotNull(result.winner());
+        assertNotNull(result.playerAnimal());
+        assertNotNull(result.opponentAnimal());
     }
 
     @Test

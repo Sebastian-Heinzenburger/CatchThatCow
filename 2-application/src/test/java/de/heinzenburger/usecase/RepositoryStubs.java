@@ -2,8 +2,10 @@ package de.heinzenburger.usecase;
 
 import de.heinzenburger.animal.AnimalSpecies;
 import de.heinzenburger.animal.AnimalSpeciesRepository;
+import de.heinzenburger.game.GameState;
 import de.heinzenburger.player.Player;
 import de.heinzenburger.player.PlayerRepository;
+import de.heinzenburger.game.GameStateRepository;
 import de.heinzenburger.shared.BiomeType;
 import de.heinzenburger.world.World;
 import de.heinzenburger.world.WorldRepository;
@@ -18,6 +20,41 @@ import java.util.stream.Collectors;
  * These stubs provide simple implementations without actual persistence.
  */
 public class RepositoryStubs {
+
+    /**
+     * In-memory implementation of GameStateRepository.
+     */
+    public static class InMemoryGameStateRepository implements GameStateRepository {
+        private Player savedPlayer;
+        private World savedWorld;
+
+        @Override
+        public void save(Player player, World world) {
+            this.savedPlayer = player;
+            this.savedWorld = world;
+        }
+
+        @Override
+        public Optional<GameState> load() {
+            if (savedPlayer == null || savedWorld == null) {
+                return Optional.empty();
+            }
+            return Optional.of(new GameState(savedPlayer, savedWorld));
+        }
+
+        public void clear() {
+            this.savedPlayer = null;
+            this.savedWorld = null;
+        }
+
+        public Optional<Player> loadPlayer() {
+            return Optional.ofNullable(savedPlayer);
+        }
+
+        public Optional<World> loadWorld() {
+            return Optional.ofNullable(savedWorld);
+        }
+    }
 
     /**
      * In-memory implementation of PlayerRepository.

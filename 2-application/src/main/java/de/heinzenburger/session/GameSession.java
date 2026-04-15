@@ -3,28 +3,27 @@ package de.heinzenburger.session;
 import de.heinzenburger.animal.Animal;
 import de.heinzenburger.battle.Battle;
 import de.heinzenburger.player.Player;
+import de.heinzenburger.session.state.EncounterPendingState;
+import de.heinzenburger.session.state.ExploringState;
+import de.heinzenburger.session.state.InBattleState;
+import de.heinzenburger.session.state.SessionState;
 import de.heinzenburger.world.World;
 
 
 /**
- * TODO: Candidate of a State pattern for game phases (exploring, in battle, encounter pending).
- * Holds transient runtime game state.
+ * Holds transient runtime game state using State pattern for game phases.
  * This is not persisted - only Player and World are saved.
  */
 public class GameSession {
 
     private final Player player;
     private final World world;
-    private Battle currentBattle;
-    private Animal encounteredAnimal;
-    private GamePhase phase;
+    private SessionState state;
 
     public GameSession(Player player, World world) {
         this.player = player;
         this.world = world;
-        this.currentBattle = null;
-        this.encounteredAnimal = null;
-        this.phase = GamePhase.EXPLORING;
+        this.state = new ExploringState();
     }
 
     public Player getPlayer() {
@@ -36,35 +35,48 @@ public class GameSession {
     }
 
     public Battle getCurrentBattle() {
-        return currentBattle;
+        if (state instanceof InBattleState battleState) {
+            return battleState.getBattle();
+        }
+        return null;
     }
 
     public Animal getEncounteredAnimal() {
-        return encounteredAnimal;
+        if (state instanceof EncounterPendingState encounterState) {
+            return encounterState.getEncounteredAnimal();
+        }
+        return null;
     }
 
     public GamePhase getPhase() {
-        return phase;
+        return state.getPhase();
+    }
+
+    public boolean canMove() {
+        return state.canMove();
+    }
+
+    public boolean canStartBattle() {
+        return state.canStartBattle();
+    }
+
+    public boolean canFlee() {
+        return state.canFlee();
     }
 
     public void startBattle(Battle battle) {
-        this.currentBattle = battle;
-        this.encounteredAnimal = null;
-        this.phase = GamePhase.IN_BATTLE;
+        this.state = state.transitionToBattle(battle);
     }
 
     public void endBattle() {
-        this.currentBattle = null;
-        this.phase = GamePhase.EXPLORING;
+        this.state = state.transitionToExploring();
     }
 
     public void setEncounter(Animal animal) {
-        this.encounteredAnimal = animal;
-        this.phase = GamePhase.ENCOUNTER_PENDING;
+        this.state = state.transitionToEncounter(animal);
     }
 
     public void clearEncounter() {
-        this.encounteredAnimal = null;
-        this.phase = GamePhase.EXPLORING;
+        this.state = state.transitionToExploring();
     }
 }

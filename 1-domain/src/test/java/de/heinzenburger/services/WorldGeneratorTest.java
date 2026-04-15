@@ -37,11 +37,11 @@ class WorldGeneratorTest {
         Position center = new Position(2, 2);
         Biome centerBiome = world.getBiomeAt(center);
 
-        assertEquals(0, centerBiome.getDistanceFromStart());
+        assertEquals(0, centerBiome.distanceFromStart());
 
         Position adjacent = new Position(2, 1);
         Biome adjacentBiome = world.getBiomeAt(adjacent);
-        assertEquals(1, adjacentBiome.getDistanceFromStart());
+        assertEquals(1, adjacentBiome.distanceFromStart());
     }
 
     @Test
@@ -54,8 +54,8 @@ class WorldGeneratorTest {
 
         for (Biome biome : world.getAllBiomes().values()) {
             if (firstType == null) {
-                firstType = biome.getType();
-            } else if (biome.getType() != firstType) {
+                firstType = biome.type();
+            } else if (biome.type() != firstType) {
                 hasVariety = true;
                 break;
             }

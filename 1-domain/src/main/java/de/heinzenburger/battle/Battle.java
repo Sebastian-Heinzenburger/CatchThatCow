@@ -8,6 +8,7 @@ import de.heinzenburger.shared.StatCategory;
 import java.util.Collections;
 import java.util.List;
 
+// TODO: Refactor this god class
 public class Battle {
     private final Animal opponentAnimal;
     private final BattleInventory playerBattleInventory;
@@ -37,38 +38,16 @@ public class Battle {
         this.state = BattleProgressState.IN_PROGRESS;
     }
 
-    // TODO: This method is doing too much - consider splitting into separate methods for validating input, calculating results, and updating state. Also it looks an awful lot like the opponentAttack method - consider refactoring to reduce duplication.
     public RoundResult playerAttack(Animal selectedAnimal, StatCategory category) throws BattleNotInProgressException, NotPlayersTurnException, AnimalNotAvailableException {
         if (selectedAnimal == null) throw new IllegalArgumentException("Selected animal cannot be null");
         if (category == null) throw new IllegalArgumentException("Category cannot be null");
 
         if (state != BattleProgressState.IN_PROGRESS) throw new BattleNotInProgressException();
         if (!playerTurn) throw new NotPlayersTurnException();
-        if (!playerBattleInventory.getAvailableAnimals().contains(selectedAnimal))
-            throw new AnimalNotAvailableException(selectedAnimal);
+        validateAnimalAvailable(selectedAnimal);
 
-        playerBattleInventory.markAsUsed(selectedAnimal);
-
-        int playerStatValue = selectedAnimal.getStat(category);
-        int opponentStatValue = opponentAnimal.getStat(category);
-
-        RoundWinner winner;
-        if (playerStatValue > opponentStatValue) {
-            winner = RoundWinner.PLAYER;
-            playerScore = playerScore.increment();
-        } else {
-            winner = RoundWinner.OPPONENT;
-            opponentScore = opponentScore.increment();
-        }
-
-        RoundResult result = new RoundResult(selectedAnimal, opponentAnimal, category, winner, playerStatValue, opponentStatValue);
-
-        if (playerScore.hasWon() || opponentScore.hasWon()) {
-            state = BattleProgressState.FINISHED;
-        } else {
-            playerTurn = false;
-            clearOpponentSelectedCategory();
-        }
+        RoundResult result = executeRound(selectedAnimal, category);
+        updateStateAfterRound(false);
 
         return result;
     }
@@ -81,15 +60,23 @@ public class Battle {
         if (state != BattleProgressState.IN_PROGRESS) throw new BattleNotInProgressException();
         if (playerTurn) throw new NotPlayersTurnException("It is not the opponent's turn");
         if (selectedAnimal == null) throw new IllegalArgumentException("Selected animal cannot be null");
-
-        if (!playerBattleInventory.getAvailableAnimals().contains(selectedAnimal))
-            throw new AnimalNotAvailableException(selectedAnimal);
         if (!playerBattleInventory.hasAvailableAnimals()) throw new NoMoreAnimalsAvailableException();
+        validateAnimalAvailable(selectedAnimal);
 
-        // Use the category that was selected (and shown to player)
         StatCategory category = getOpponentSelectedCategoryInternal();
+        RoundResult result = executeRound(selectedAnimal, category);
+        updateStateAfterRound(true);
 
-        // Player has chosen the animal to defend with
+        return result;
+    }
+
+    private void validateAnimalAvailable(Animal animal) throws AnimalNotAvailableException {
+        if (!playerBattleInventory.getAvailableAnimals().contains(animal)) {
+            throw new AnimalNotAvailableException(animal);
+        }
+    }
+
+    private RoundResult executeRound(Animal selectedAnimal, StatCategory category) {
         playerBattleInventory.markAsUsed(selectedAnimal);
 
         int playerStatValue = selectedAnimal.getStat(category);
@@ -104,17 +91,16 @@ public class Battle {
             opponentScore = opponentScore.increment();
         }
 
-        RoundResult result = new RoundResult(selectedAnimal, opponentAnimal, category, winner, playerStatValue, opponentStatValue);
+        return new RoundResult(selectedAnimal, opponentAnimal, category, winner, playerStatValue, opponentStatValue);
+    }
 
+    private void updateStateAfterRound(boolean switchToPlayerTurn) {
         if (playerScore.hasWon() || opponentScore.hasWon()) {
             state = BattleProgressState.FINISHED;
         } else {
-            playerTurn = true;
+            playerTurn = switchToPlayerTurn;
         }
-
         clearOpponentSelectedCategory();
-
-        return result;
     }
 
     public StatCategory getOpponentSelectedCategory() throws BattleNotInProgressException, NotPlayersTurnException {

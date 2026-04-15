@@ -1,10 +1,9 @@
 package de.heinzenburger.usecase;
 
 import de.heinzenburger.exception.GameNotStartedException;
-import de.heinzenburger.player.PlayerRepository;
+import de.heinzenburger.game.GameStateRepository;
 import de.heinzenburger.session.GameSession;
 import de.heinzenburger.session.GameSessionManager;
-import de.heinzenburger.world.WorldRepository;
 
 /**
  * Persists the current game state.
@@ -12,16 +11,13 @@ import de.heinzenburger.world.WorldRepository;
 public class SaveGameUseCase {
 
     private final GameSessionManager sessionManager;
-    private final PlayerRepository playerRepository;
-    private final WorldRepository worldRepository;
+    private final GameStateRepository gameStateRepository;
 
     public SaveGameUseCase(
             GameSessionManager sessionManager,
-            PlayerRepository playerRepository,
-            WorldRepository worldRepository) {
+            GameStateRepository gameStateRepository) {
         this.sessionManager = sessionManager;
-        this.playerRepository = playerRepository;
-        this.worldRepository = worldRepository;
+        this.gameStateRepository = gameStateRepository;
     }
 
     /**
@@ -32,8 +28,7 @@ public class SaveGameUseCase {
     public void execute() throws GameNotStartedException {
         GameSession session = sessionManager.getCurrentSession();
 
-        // Persist player and world
-        playerRepository.save(session.getPlayer());
-        worldRepository.save(session.getWorld());
+        // Persist player and world atomically
+        gameStateRepository.save(session.getPlayer(), session.getWorld());
     }
 }
