@@ -20,7 +20,7 @@ public record Biome(Position position, BiomeType type, int distanceFromStart) {
 
     public boolean canContainSpecies(AnimalSpecies species) {
         if (species == null) return false;
-        return species.getHabitat() == this.type && species.getLevel() == getAnimalLevel();
+        return species.habitat() == this.type && species.level() == getAnimalLevel();
     }
 
     @Override

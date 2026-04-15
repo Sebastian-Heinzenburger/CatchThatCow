@@ -120,14 +120,14 @@ public class RepositoryStubs {
         @Override
         public List<AnimalSpecies> findByLevel(int level) {
             return species.stream()
-                    .filter(s -> s.getLevel() == level)
+                    .filter(s -> s.level() == level)
                     .collect(Collectors.toList());
         }
 
         @Override
         public List<AnimalSpecies> findByHabitat(BiomeType biomeType) {
             return species.stream()
-                    .filter(s -> s.getHabitat() == biomeType)
+                    .filter(s -> s.habitat() == biomeType)
                     .collect(Collectors.toList());
         }
 

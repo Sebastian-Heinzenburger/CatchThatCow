@@ -15,15 +15,8 @@ public class TurnManager {
         return playerTurn;
     }
 
-    public void switchToPlayerTurn() {
-        this.playerTurn = true;
-    }
-
-    public void switchToOpponentTurn() {
-        this.playerTurn = false;
-    }
-
     public void switchTurn() {
         this.playerTurn = !this.playerTurn;
     }
+
 }

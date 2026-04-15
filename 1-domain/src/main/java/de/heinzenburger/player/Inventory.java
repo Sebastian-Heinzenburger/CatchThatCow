@@ -30,8 +30,7 @@ public class Inventory {
 
     public Animal removeRandom() throws InsufficientAnimalsException {
         if (animals.isEmpty()) throw new InsufficientAnimalsException(1, 0);
-        int index = random.nextInt(animals.size());
-        return animals.remove(index);
+        return animals.remove(random.nextInt(animals.size()));
     }
 
     public List<Animal> selectRandomForBattle(int count) throws InsufficientAnimalsException {

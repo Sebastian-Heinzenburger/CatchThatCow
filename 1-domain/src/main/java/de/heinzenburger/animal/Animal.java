@@ -42,20 +42,20 @@ public class Animal {
     }
 
     public int getLevel() {
-        return species.getLevel();
+        return species.level();
     }
 
     public boolean isPredator() {
-        return species.getType() == AnimalType.PREDATOR;
+        return species.type() == AnimalType.PREDATOR;
     }
 
     public boolean isPrey() {
-        return species.getType() == AnimalType.PREY;
+        return species.type() == AnimalType.PREY;
     }
 
     @Override
     public String toString() {
-        return species.getName();
+        return species.name();
     }
 
     @Override

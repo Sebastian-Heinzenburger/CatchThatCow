@@ -24,7 +24,7 @@ class AnimalEncounterServiceTest {
         Animal animal = service.encounterAnimal(biome, species);
 
         assertNotNull(animal);
-        assertEquals(BiomeType.DESERT, animal.getSpecies().getHabitat());
+        assertEquals(BiomeType.DESERT, animal.getSpecies().habitat());
         assertEquals(2, animal.getLevel());
     }
 
@@ -40,7 +40,7 @@ class AnimalEncounterServiceTest {
 
         Animal animal = service.encounterAnimal(desert, species);
 
-        assertEquals("Scorpion", animal.getSpecies().getName());
+        assertEquals("Scorpion", animal.getSpecies().name());
     }
 
     @Test

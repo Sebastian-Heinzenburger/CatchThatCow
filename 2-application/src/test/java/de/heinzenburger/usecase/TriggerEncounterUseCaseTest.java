@@ -21,15 +21,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class TriggerEncounterUseCaseTest {
 
     private GameSessionManager sessionManager;
-    private AnimalEncounterService encounterService;
-    private RepositoryStubs.InMemoryAnimalSpeciesRepository speciesRepository;
     private TriggerEncounterUseCase useCase;
 
     @BeforeEach
     void setUp() {
         sessionManager = new GameSessionManager();
-        encounterService = new AnimalEncounterService(TestDataFactory.getTestRandom());
-        speciesRepository = new RepositoryStubs.InMemoryAnimalSpeciesRepository();
+        AnimalEncounterService encounterService = new AnimalEncounterService(TestDataFactory.getTestRandom());
+        RepositoryStubs.InMemoryAnimalSpeciesRepository speciesRepository = new RepositoryStubs.InMemoryAnimalSpeciesRepository();
 
         // Add test species
         List<AnimalSpecies> species = TestDataFactory.createAnimalSpeciesList(5, 1);
@@ -58,7 +56,7 @@ class TriggerEncounterUseCaseTest {
         Animal encounteredAnimal = useCase.execute();
 
         // Animal should be level 1 (matching the biome level)
-        assertEquals(1, encounteredAnimal.getSpecies().getLevel());
+        assertEquals(1, encounteredAnimal.getSpecies().level());
     }
 
     @Test
@@ -92,7 +90,7 @@ class TriggerEncounterUseCaseTest {
     void shouldThrowExceptionWhenNotInExploringPhase() throws GameNotStartedException, InvalidGamePhaseException {
         World world = TestDataFactory.createTestWorld(2);
         Player player = TestDataFactory.createPlayerAtPosition(new Position(0, 0), 3);
-        GameSession session = sessionManager.startSession(player, world);
+        sessionManager.startSession(player, world);
 
         // Trigger first encounter
         useCase.execute();

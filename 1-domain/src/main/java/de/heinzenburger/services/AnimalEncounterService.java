@@ -18,7 +18,7 @@ public class AnimalEncounterService {
     public Animal encounterAnimal(Biome biome, List<AnimalSpecies> availableSpecies) {
         if (biome == null) throw new IllegalArgumentException("Biome cannot be null");
         if (availableSpecies == null || availableSpecies.isEmpty())
-            throw new IllegalArgumentException("Available species cannot be null or empty");
+            throw new IllegalArgumentException("Available species cannot be null or empty: " + availableSpecies);
 
         List<AnimalSpecies> compatibleSpecies = availableSpecies.stream().filter(biome::canContainSpecies).toList();
 

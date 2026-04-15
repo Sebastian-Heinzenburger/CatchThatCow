@@ -19,11 +19,11 @@ class AnimalSpeciesTest {
         AnimalStats baseStats = createStats(10, 20, 30, 40, 50);
         AnimalSpecies species = new AnimalSpecies("Cobra", 2, AnimalType.PREDATOR, baseStats, BiomeType.DESERT);
 
-        assertEquals("Cobra", species.getName());
-        assertEquals(2, species.getLevel());
-        assertEquals(AnimalType.PREDATOR, species.getType());
-        assertEquals(baseStats, species.getBaseStats());
-        assertEquals(BiomeType.DESERT, species.getHabitat());
+        assertEquals("Cobra", species.name());
+        assertEquals(2, species.level());
+        assertEquals(AnimalType.PREDATOR, species.type());
+        assertEquals(baseStats, species.baseStats());
+        assertEquals(BiomeType.DESERT, species.habitat());
     }
 
     @Test

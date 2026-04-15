@@ -53,7 +53,7 @@ public class FleeEncounterUseCase {
         private final Animal predator;
 
         public CannotFleeFromPredatorException(Animal predator) {
-            super(String.format("Cannot flee from predator: %s", predator.getSpecies().getName()));
+            super(String.format("Cannot flee from predator: %s", predator.getSpecies().name()));
             this.predator = predator;
         }
 

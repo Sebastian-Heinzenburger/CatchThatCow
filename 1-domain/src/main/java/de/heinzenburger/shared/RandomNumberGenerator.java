@@ -1,5 +1,7 @@
 package de.heinzenburger.shared;
 
+import java.util.List;
+
 /**
  * Domain abstraction for random number generation.
  * Allows deterministic testing and potential future enhancements
@@ -18,4 +20,7 @@ public interface RandomNumberGenerator {
      * @return random double in [0.0, 1.0)
      */
     double nextDouble();
+
+    <T> T choice(List<T> items);
+    <T> T choice(T[] items);
 }

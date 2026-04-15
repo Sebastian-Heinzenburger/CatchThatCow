@@ -1,5 +1,6 @@
 package de.heinzenburger.shared;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -36,5 +37,15 @@ public final class JavaRandomAdapter implements RandomNumberGenerator {
     @Override
     public double nextDouble() {
         return random.nextDouble();
+    }
+
+    @Override
+    public <T> T choice(List<T> items) {
+        return items.get(random.nextInt(items.size()));
+    }
+
+    @Override
+    public <T> T choice(T[] items) {
+        return items[random.nextInt(items.length)];
     }
 }

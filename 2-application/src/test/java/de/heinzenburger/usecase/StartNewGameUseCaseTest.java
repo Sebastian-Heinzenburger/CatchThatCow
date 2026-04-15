@@ -73,7 +73,7 @@ class StartNewGameUseCaseTest {
         GameSession session = useCase.execute(worldSize);
 
         // Verify animals are level 1 (matching start biome)
-        session.getPlayer().getInventory().getAnimals().forEach(animal -> assertEquals(1, animal.getSpecies().getLevel()));
+        session.getPlayer().getInventory().getAnimals().forEach(animal -> assertEquals(1, animal.getSpecies().level()));
     }
 
     @Test
