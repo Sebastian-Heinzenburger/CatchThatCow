@@ -48,7 +48,7 @@ public class PlayerAttackUseCase {
         try {
             return battle.playerAttack(selectedAnimal, category);
         } catch (BattleNotInProgressException | NotPlayersTurnException e) {
-            throw new InvalidGamePhaseException(e.getMessage(), e);
+           throw new InvalidGamePhaseException(e.getMessage(), e);
         }
     }
 }

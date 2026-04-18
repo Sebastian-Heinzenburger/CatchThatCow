@@ -8,14 +8,14 @@ import java.util.Random;
  * Lives in the adapters layer per clean architecture principles.
  * Provides constructors for production use and deterministic testing.
  */
-public final class JavaRandomAdapter implements RandomNumberGenerator {
+public final class JavaRandomNumberGenerator implements RandomNumberGenerator {
     private final Random random;
 
-    public JavaRandomAdapter() {
+    public JavaRandomNumberGenerator() {
         this(new Random());
     }
 
-    public JavaRandomAdapter(Random random) {
+    public JavaRandomNumberGenerator(Random random) {
         if (random == null) {
             throw new IllegalArgumentException("Random cannot be null");
         }
@@ -25,7 +25,7 @@ public final class JavaRandomAdapter implements RandomNumberGenerator {
     /**
      * Constructor for deterministic testing with seed.
      */
-    public JavaRandomAdapter(long seed) {
+    public JavaRandomNumberGenerator(long seed) {
         this(new Random(seed));
     }
 

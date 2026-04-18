@@ -9,7 +9,7 @@ package de.heinzenburger.battle;
  */
 public sealed interface BattleState permits BattleState.NotStarted, BattleState.InProgress, BattleState.Finished {
 
-    record NotStarted() implements BattleState {
+    record NotStarted() implements BattleState { // TODO: Is this needed?
     }
 
     record InProgress(Score playerScore, Score opponentScore) implements BattleState {
