@@ -7,7 +7,11 @@ import de.heinzenburger.animal.AnimalSpeciesRepository;
 import de.heinzenburger.player.Inventory;
 import de.heinzenburger.player.Player;
 import de.heinzenburger.player.PlayerId;
-import de.heinzenburger.shared.*;
+import de.heinzenburger.shared.AnimalStats;
+import de.heinzenburger.shared.BiomeType;
+import de.heinzenburger.shared.Position;
+import de.heinzenburger.shared.RandomNumberGenerator;
+import de.heinzenburger.shared.StatCategory;
 import de.heinzenburger.world.Biome;
 import de.heinzenburger.world.World;
 import de.heinzenburger.world.WorldId;
@@ -17,7 +21,12 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.UUID;
 
 /**
  * Utility class for serializing and deserializing game state to text files.

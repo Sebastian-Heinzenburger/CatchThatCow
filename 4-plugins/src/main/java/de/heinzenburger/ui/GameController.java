@@ -57,14 +57,14 @@ public class GameController {
 
     private boolean showMainMenu() {
         view.showMainMenu();
-        System.out.print("Enter choice: ");
+        view.showPrompt("Enter choice: ");
         String choice = view.readInput();
 
         switch (choice) {
             case "1", "new", "n" -> {
                 view.showMessage("\nStarting new game...");
                 view.showMessage("Enter world size (1=3x3, 2=5x5, 3=7x7) or press Enter for default (5x5):");
-                System.out.print("> ");
+                view.showPrompt("> ");
                 String sizeInput = view.readInput();
 
                 int worldSize = DEFAULT_WORLD_SIZE;

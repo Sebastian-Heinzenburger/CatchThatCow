@@ -8,6 +8,11 @@ import de.heinzenburger.session.GameSession;
 import de.heinzenburger.shared.Direction;
 import de.heinzenburger.shared.Position;
 import de.heinzenburger.ui.command.CommandResult;
+import de.heinzenburger.ui.command.Commands;
+import de.heinzenburger.ui.dto.AnimalSummary;
+import de.heinzenburger.ui.dto.MapData;
+import de.heinzenburger.ui.dto.MovementResult;
+import de.heinzenburger.ui.parser.CommandParser;
 import de.heinzenburger.usecase.MovePlayerUseCase;
 import de.heinzenburger.usecase.SaveGameUseCase;
 import de.heinzenburger.usecase.TriggerEncounterUseCase;
@@ -36,27 +41,26 @@ public class ExploringHandler implements PhaseHandler {
 
     @Override
     public CommandResult handle(String input, GameSession session) {
-        String[] parts = input.trim().toLowerCase().split("\\s+");
-        if (parts.length == 0 || parts[0].isEmpty()) {
+        String[] parts = CommandParser.tokenize(input);
+        if (CommandParser.isEmpty(parts)) {
             return new CommandResult.Error("Please enter a command. Type 'help' for available commands.");
         }
 
-        String command = parts[0];
+        String command = CommandParser.getCommand(parts);
 
-        return switch (command) {
-            case "move", "m" -> handleMove(parts, session);
-            case "n", "north" -> handleMoveDirection(Direction.NORTH, session);
-            case "e", "east" -> handleMoveDirection(Direction.EAST, session);
-            case "s", "south" -> handleMoveDirection(Direction.SOUTH, session);
-            case "w", "west" -> handleMoveDirection(Direction.WEST, session);
-            case "encounter", "enc" -> handleEncounter();
-            case "inventory", "inv", "i" -> handleInventory(session);
-            case "map" -> handleMap(session);
-            case "save" -> handleSave();
-            case "help", "h", "?" -> new CommandResult.Help(getAvailableCommands());
-            case "quit", "q", "exit" -> new CommandResult.Quit();
-            default -> new CommandResult.Error("Unknown command: " + command + ". Type 'help' for available commands.");
-        };
+        if (Commands.matches(command, Commands.MOVE)) return handleMove(parts, session);
+        if (Commands.matches(command, Commands.NORTH)) return handleMoveDirection(Direction.NORTH, session);
+        if (Commands.matches(command, Commands.EAST)) return handleMoveDirection(Direction.EAST, session);
+        if (Commands.matches(command, Commands.SOUTH)) return handleMoveDirection(Direction.SOUTH, session);
+        if (Commands.matches(command, Commands.WEST)) return handleMoveDirection(Direction.WEST, session);
+        if (Commands.matches(command, Commands.ENCOUNTER)) return handleEncounter();
+        if (Commands.matches(command, Commands.INVENTORY)) return handleInventory(session);
+        if (Commands.matches(command, Commands.MAP)) return handleMap(session);
+        if (Commands.matches(command, Commands.SAVE)) return handleSave();
+        if (Commands.matches(command, Commands.HELP)) return new CommandResult.Help(getAvailableCommands());
+        if (Commands.matches(command, Commands.QUIT)) return new CommandResult.Quit();
+
+        return new CommandResult.Error("Unknown command: " + command + ". Type 'help' for available commands.");
     }
 
     private CommandResult handleMove(String[] parts, GameSession session) {
@@ -64,7 +68,7 @@ public class ExploringHandler implements PhaseHandler {
             return new CommandResult.Error("Usage: move <n|e|s|w> or use shortcut: n/e/s/w");
         }
 
-        Direction direction = parseDirection(parts[1]);
+        Direction direction = CommandParser.parseDirection(parts[1]).orElse(null);
         if (direction == null) {
             return new CommandResult.Error("Invalid direction: " + parts[1] + ". Use n/e/s/w or north/east/south/west");
         }
@@ -76,7 +80,7 @@ public class ExploringHandler implements PhaseHandler {
         try {
             Position newPos = movePlayerUseCase.execute(direction);
             Biome biome = session.getWorld().getBiomeAt(newPos);
-            return new CommandResult.MovedTo(newPos, biome);
+            return new CommandResult.MovedTo(MovementResult.from(newPos, biome));
         } catch (InvalidMoveException e) {
             return new CommandResult.Error("Cannot move there - you've reached the edge of the world!");
         } catch (GameNotStartedException | InvalidGamePhaseException e) {
@@ -87,19 +91,21 @@ public class ExploringHandler implements PhaseHandler {
     private CommandResult handleEncounter() {
         try {
             Animal animal = triggerEncounterUseCase.execute();
-            return new CommandResult.EncounterStarted(animal);
+            return new CommandResult.EncounterStarted(AnimalSummary.from(animal));
         } catch (GameNotStartedException | InvalidGamePhaseException e) {
             return new CommandResult.Error(e.getMessage());
         }
     }
 
     private CommandResult handleInventory(GameSession session) {
-        List<Animal> animals = session.getPlayer().getInventory().getAnimals();
+        List<AnimalSummary> animals = session.getPlayer().getInventory().getAnimals().stream()
+                .map(AnimalSummary::from)
+                .toList();
         return new CommandResult.ShowInventory(animals);
     }
 
     private CommandResult handleMap(GameSession session) {
-        return new CommandResult.ShowMap(session.getWorld(), session.getPlayer().getCurrentPosition());
+        return new CommandResult.ShowMap(MapData.from(session.getWorld(), session.getPlayer().getCurrentPosition()));
     }
 
     private CommandResult handleSave() {
@@ -109,16 +115,6 @@ public class ExploringHandler implements PhaseHandler {
         } catch (GameNotStartedException e) {
             return new CommandResult.Error(e.getMessage());
         }
-    }
-
-    private Direction parseDirection(String dir) {
-        return switch (dir.toLowerCase()) {
-            case "n", "north" -> Direction.NORTH;
-            case "e", "east" -> Direction.EAST;
-            case "s", "south" -> Direction.SOUTH;
-            case "w", "west" -> Direction.WEST;
-            default -> null;
-        };
     }
 
     @Override

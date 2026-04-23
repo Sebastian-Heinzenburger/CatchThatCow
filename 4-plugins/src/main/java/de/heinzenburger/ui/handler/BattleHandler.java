@@ -10,6 +10,11 @@ import de.heinzenburger.exception.InvalidGamePhaseException;
 import de.heinzenburger.session.GameSession;
 import de.heinzenburger.shared.StatCategory;
 import de.heinzenburger.ui.command.CommandResult;
+import de.heinzenburger.ui.command.Commands;
+import de.heinzenburger.ui.dto.BattleOutcomeSummary;
+import de.heinzenburger.ui.dto.BattleSummary;
+import de.heinzenburger.ui.dto.RoundOutcomeSummary;
+import de.heinzenburger.ui.parser.CommandParser;
 import de.heinzenburger.usecase.DefendAgainstAttackUseCase;
 import de.heinzenburger.usecase.PlayerAttackUseCase;
 import de.heinzenburger.usecase.ResolveBattleUseCase;
@@ -37,22 +42,21 @@ public class BattleHandler implements PhaseHandler {
 
     @Override
     public CommandResult handle(String input, GameSession session) {
-        String[] parts = input.trim().toLowerCase().split("\\s+");
-        if (parts.length == 0 || parts[0].isEmpty()) {
+        String[] parts = CommandParser.tokenize(input);
+        if (CommandParser.isEmpty(parts)) {
             return new CommandResult.Error("Please enter a command. Type 'help' for options.");
         }
 
-        String command = parts[0];
+        String command = CommandParser.getCommand(parts);
         Battle battle = session.getCurrentBattle();
 
-        return switch (command) {
-            case "attack", "a" -> handleAttack(parts, battle);
-            case "defend", "d" -> handleDefend(parts, battle);
-            case "status", "st" -> new CommandResult.ShowBattleStatus(battle);
-            case "help", "h", "?" -> new CommandResult.Help(getAvailableCommands(battle));
-            case "quit", "q", "exit" -> new CommandResult.Quit();
-            default -> new CommandResult.Error("Unknown command: " + command + ". Type 'help' for options.");
-        };
+        if (Commands.matches(command, Commands.ATTACK)) return handleAttack(parts, battle);
+        if (Commands.matches(command, Commands.DEFEND)) return handleDefend(parts, battle);
+        if (Commands.matches(command, Commands.STATUS)) return new CommandResult.ShowBattleStatus(BattleSummary.from(battle));
+        if (Commands.matches(command, Commands.HELP)) return new CommandResult.Help(getAvailableCommands(battle));
+        if (Commands.matches(command, Commands.QUIT)) return new CommandResult.Quit();
+
+        return new CommandResult.Error("Unknown command: " + command + ". Type 'help' for options.");
     }
 
     private CommandResult handleAttack(String[] parts, Battle battle) {
@@ -64,7 +68,7 @@ public class BattleHandler implements PhaseHandler {
             return new CommandResult.Error("Usage: attack <animal#> <stat>\nStats: speed, length, weight, lifespan, offspring");
         }
 
-        int animalIndex = parseAnimalIndex(parts[1]);
+        int animalIndex = CommandParser.parseAnimalIndex(parts[1]);
         if (animalIndex < 0) {
             return new CommandResult.Error("Invalid animal number: " + parts[1]);
         }
@@ -74,7 +78,7 @@ public class BattleHandler implements PhaseHandler {
             return new CommandResult.Error("Animal #" + (animalIndex + 1) + " not available. You have " + available.size() + " animals.");
         }
 
-        StatCategory category = parseStatCategory(parts[2]);
+        StatCategory category = CommandParser.parseStatCategory(parts[2]).orElse(null);
         if (category == null) {
             return new CommandResult.Error("Invalid stat: " + parts[2] + "\nValid stats: speed, length, weight, lifespan, offspring");
         }
@@ -105,7 +109,7 @@ public class BattleHandler implements PhaseHandler {
             }
         }
 
-        int animalIndex = parseAnimalIndex(parts[1]);
+        int animalIndex = CommandParser.parseAnimalIndex(parts[1]);
         if (animalIndex < 0) {
             return new CommandResult.Error("Invalid animal number: " + parts[1]);
         }
@@ -133,32 +137,12 @@ public class BattleHandler implements PhaseHandler {
         if (battle.isFinished()) {
             try {
                 var outcome = resolveBattleUseCase.execute();
-                return new CommandResult.BattleEnded(outcome);
+                return new CommandResult.BattleEnded(BattleOutcomeSummary.from(outcome));
             } catch (GameNotStartedException | InvalidGamePhaseException e) {
-                return new CommandResult.RoundOutcome(result, true);
+                return new CommandResult.RoundOutcome(RoundOutcomeSummary.from(result), true);
             }
         }
-        return new CommandResult.RoundOutcome(result, false);
-    }
-
-    private int parseAnimalIndex(String input) {
-        try {
-            int index = Integer.parseInt(input);
-            return index - 1; // Convert to 0-based index
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
-
-    private StatCategory parseStatCategory(String input) {
-        return switch (input.toLowerCase()) {
-            case "speed", "spd", "sp" -> StatCategory.SPEED;
-            case "length", "len", "l" -> StatCategory.LENGTH;
-            case "weight", "wgt", "w" -> StatCategory.WEIGHT;
-            case "lifespan", "life", "lf" -> StatCategory.LIFESPAN;
-            case "offspring", "off", "o" -> StatCategory.OFFSPRING;
-            default -> null;
-        };
+        return new CommandResult.RoundOutcome(RoundOutcomeSummary.from(result), false);
     }
 
     @Override

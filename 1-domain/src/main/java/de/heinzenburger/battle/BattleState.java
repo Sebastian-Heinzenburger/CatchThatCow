@@ -26,14 +26,14 @@ public sealed interface BattleState permits BattleState.NotStarted, BattleState.
             Score newPlayerScore = playerScore.increment();
             if (newPlayerScore.hasWon())
                 return new Finished(newPlayerScore, opponentScore, RoundWinner.PLAYER);
-            return new InProgress(playerScore.increment(), opponentScore);
+            return new InProgress(newPlayerScore, opponentScore);
         }
 
         public BattleState incrementOpponentScore() {
             Score newOpponentScore = opponentScore.increment();
             if (newOpponentScore.hasWon())
                 return new Finished(playerScore, newOpponentScore, RoundWinner.OPPONENT);
-            return new InProgress(playerScore, opponentScore.increment());
+            return new InProgress(playerScore, newOpponentScore);
         }
     }
 

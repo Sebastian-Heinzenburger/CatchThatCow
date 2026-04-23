@@ -1,7 +1,7 @@
 package de.heinzenburger.ui.view;
 
-import de.heinzenburger.animal.Animal;
 import de.heinzenburger.shared.StatCategory;
+import de.heinzenburger.ui.dto.AnimalSummary;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class InventoryRenderer {
 
-    public String render(List<Animal> animals) {
+    public String render(List<AnimalSummary> animals) {
         if (animals.isEmpty()) {
             return "Your inventory is empty!";
         }
@@ -24,12 +24,12 @@ public class InventoryRenderer {
 
         // Table rows
         int index = 1;
-        for (Animal animal : animals) {
+        for (AnimalSummary animal : animals) {
             sb.append(String.format("║ %2d │ %-14s │ %3d │ %-8s │ %5d │ %6d │ %6d │ %8d │ %9d ║\n",
                     index++,
-                    truncate(animal.getSpecies().name(), 14),
-                    animal.getLevel(),
-                    animal.isPredator() ? "PREDATOR" : "PREY",
+                    truncate(animal.name(), 14),
+                    animal.level(),
+                    animal.typeLabel(),
                     animal.getStat(StatCategory.SPEED),
                     animal.getStat(StatCategory.LENGTH),
                     animal.getStat(StatCategory.WEIGHT),
@@ -45,18 +45,18 @@ public class InventoryRenderer {
         return sb.toString();
     }
 
-    public String renderCompact(List<Animal> animals) {
+    public String renderCompact(List<AnimalSummary> animals) {
         if (animals.isEmpty()) {
             return "No animals available";
         }
 
         StringBuilder sb = new StringBuilder();
         int index = 1;
-        for (Animal animal : animals) {
+        for (AnimalSummary animal : animals) {
             sb.append(String.format("%d. %s (Lvl %d, %s) - SPD:%d LEN:%d WGT:%d LIFE:%d OFF:%d\n",
                     index++,
-                    animal.getSpecies().name(),
-                    animal.getLevel(),
+                    animal.name(),
+                    animal.level(),
                     animal.isPredator() ? "PRED" : "PREY",
                     animal.getStat(StatCategory.SPEED),
                     animal.getStat(StatCategory.LENGTH),

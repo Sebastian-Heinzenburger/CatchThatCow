@@ -22,4 +22,6 @@ public interface GameView {
     void showMessage(String message);
 
     void showError(String message);
+
+    void showPrompt(String prompt);
 }

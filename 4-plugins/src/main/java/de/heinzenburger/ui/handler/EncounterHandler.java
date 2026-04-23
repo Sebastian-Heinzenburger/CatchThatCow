@@ -7,6 +7,9 @@ import de.heinzenburger.exception.InvalidGamePhaseException;
 import de.heinzenburger.player.exception.InsufficientAnimalsException;
 import de.heinzenburger.session.GameSession;
 import de.heinzenburger.ui.command.CommandResult;
+import de.heinzenburger.ui.command.Commands;
+import de.heinzenburger.ui.dto.BattleSummary;
+import de.heinzenburger.ui.parser.CommandParser;
 import de.heinzenburger.usecase.FleeEncounterUseCase;
 import de.heinzenburger.usecase.StartBattleUseCase;
 
@@ -28,24 +31,24 @@ public class EncounterHandler implements PhaseHandler {
 
     @Override
     public CommandResult handle(String input, GameSession session) {
-        String command = input.trim().toLowerCase();
-
-        if (command.isEmpty()) {
+        String[] parts = CommandParser.tokenize(input);
+        if (CommandParser.isEmpty(parts)) {
             return new CommandResult.Error("Please enter a command. Type 'help' for options.");
         }
 
-        return switch (command) {
-            case "fight", "f", "battle", "b" -> handleFight();
-            case "flee", "run", "r" -> handleFlee(session);
-            case "help", "h", "?" -> new CommandResult.Help(getAvailableCommands(session));
-            default -> new CommandResult.Error("Unknown command: " + command + ". Type 'help' for options.");
-        };
+        String command = CommandParser.getCommand(parts);
+
+        if (Commands.matches(command, Commands.FIGHT)) return handleFight();
+        if (Commands.matches(command, Commands.FLEE)) return handleFlee(session);
+        if (Commands.matches(command, Commands.HELP)) return new CommandResult.Help(getAvailableCommands(session));
+
+        return new CommandResult.Error("Unknown command: " + command + ". Type 'help' for options.");
     }
 
     private CommandResult handleFight() {
         try {
             Battle battle = startBattleUseCase.execute();
-            return new CommandResult.BattleStarted(battle);
+            return new CommandResult.BattleStarted(BattleSummary.from(battle));
         } catch (GameNotStartedException | InvalidGamePhaseException e) {
             return new CommandResult.Error(e.getMessage());
         } catch (InsufficientAnimalsException e) {

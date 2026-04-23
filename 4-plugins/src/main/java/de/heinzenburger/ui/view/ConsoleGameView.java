@@ -19,11 +19,22 @@ public class ConsoleGameView implements GameView {
     private final InventoryRenderer inventoryRenderer;
     private final BattleRenderer battleRenderer;
 
+    /**
+     * Creates a ConsoleGameView with default dependencies (System.in and default renderers).
+     */
     public ConsoleGameView() {
-        this.scanner = new Scanner(System.in);
-        this.worldRenderer = new WorldRenderer();
-        this.inventoryRenderer = new InventoryRenderer();
-        this.battleRenderer = new BattleRenderer();
+        this(new Scanner(System.in), new WorldRenderer(), new InventoryRenderer(), new BattleRenderer());
+    }
+
+    /**
+     * Creates a ConsoleGameView with injected dependencies (for testability).
+     */
+    public ConsoleGameView(Scanner scanner, WorldRenderer worldRenderer,
+                           InventoryRenderer inventoryRenderer, BattleRenderer battleRenderer) {
+        this.scanner = scanner;
+        this.worldRenderer = worldRenderer;
+        this.inventoryRenderer = inventoryRenderer;
+        this.battleRenderer = battleRenderer;
     }
 
     @Override
@@ -92,8 +103,9 @@ public class ConsoleGameView implements GameView {
         } else if (result instanceof CommandResult.Quit) {
             System.out.println("Goodbye! Thanks for playing!");
         } else if (result instanceof CommandResult.MovedTo movedTo) {
+            var m = movedTo.movement();
             System.out.printf("Moved to %s - %s (Level %d)%n",
-                    movedTo.position(), movedTo.biome().type(), movedTo.biome().getAnimalLevel());
+                    m.position(), m.biomeType(), m.animalLevel());
         } else if (result instanceof CommandResult.EncounterStarted encounter) {
             System.out.print(battleRenderer.renderEncounteredAnimal(encounter.animal()));
         } else if (result instanceof CommandResult.BattleStarted battleStarted) {
@@ -110,7 +122,7 @@ public class ConsoleGameView implements GameView {
         } else if (result instanceof CommandResult.ShowInventory showInventory) {
             System.out.print(inventoryRenderer.render(showInventory.animals()));
         } else if (result instanceof CommandResult.ShowMap showMap) {
-            System.out.print(worldRenderer.render(showMap.world(), showMap.playerPosition()));
+            System.out.print(worldRenderer.render(showMap.map()));
         } else if (result instanceof CommandResult.ShowBattleStatus showStatus) {
             System.out.print(battleRenderer.renderBattleStatus(showStatus.battle()));
         }
@@ -132,5 +144,10 @@ public class ConsoleGameView implements GameView {
     @Override
     public void showError(String message) {
         System.out.println("ERROR: " + message);
+    }
+
+    @Override
+    public void showPrompt(String prompt) {
+        System.out.print(prompt);
     }
 }

@@ -1,16 +1,13 @@
 package de.heinzenburger.ui.command;
 
-import de.heinzenburger.animal.Animal;
-import de.heinzenburger.battle.RoundResult;
-import de.heinzenburger.shared.Position;
-import de.heinzenburger.usecase.ResolveBattleUseCase.BattleOutcome;
-import de.heinzenburger.world.Biome;
+import de.heinzenburger.ui.dto.*;
 
 import java.util.List;
 
 /**
  * Sealed interface representing outcomes of command execution.
  * Uses Strategy pattern - each result type knows how to display itself.
+ * Uses presentation DTOs to decouple from domain entities.
  */
 public sealed interface CommandResult {
 
@@ -34,19 +31,19 @@ public sealed interface CommandResult {
         }
     }
 
-    record MovedTo(Position position, Biome biome) implements CommandResult {
+    record MovedTo(MovementResult movement) implements CommandResult {
     }
 
-    record EncounterStarted(Animal animal) implements CommandResult {
+    record EncounterStarted(AnimalSummary animal) implements CommandResult {
     }
 
-    record BattleStarted(de.heinzenburger.battle.Battle battle) implements CommandResult {
+    record BattleStarted(BattleSummary battle) implements CommandResult {
     }
 
-    record RoundOutcome(RoundResult result, boolean battleFinished) implements CommandResult {
+    record RoundOutcome(RoundOutcomeSummary result, boolean battleFinished) implements CommandResult {
     }
 
-    record BattleEnded(BattleOutcome outcome) implements CommandResult {
+    record BattleEnded(BattleOutcomeSummary outcome) implements CommandResult {
     }
 
     record FledEncounter() implements CommandResult {
@@ -55,12 +52,12 @@ public sealed interface CommandResult {
     record GameSaved() implements CommandResult {
     }
 
-    record ShowInventory(List<Animal> animals) implements CommandResult {
+    record ShowInventory(List<AnimalSummary> animals) implements CommandResult {
     }
 
-    record ShowMap(de.heinzenburger.world.World world, Position playerPosition) implements CommandResult {
+    record ShowMap(MapData map) implements CommandResult {
     }
 
-    record ShowBattleStatus(de.heinzenburger.battle.Battle battle) implements CommandResult {
+    record ShowBattleStatus(BattleSummary battle) implements CommandResult {
     }
 }
